@@ -1,2 +1,1 @@
-# devzone-api-springboot
-DevZone API using SpringBoot
+# DevZone API using SpringBoot
