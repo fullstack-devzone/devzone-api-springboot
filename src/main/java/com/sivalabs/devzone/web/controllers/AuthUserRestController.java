@@ -2,50 +2,60 @@ package com.sivalabs.devzone.web.controllers;
 
 import com.sivalabs.devzone.annotations.AnyAuthenticatedUser;
 import com.sivalabs.devzone.annotations.CurrentUser;
-import com.sivalabs.devzone.config.security.SecurityUtils;
+import com.sivalabs.devzone.config.security.SecurityUser;
 import com.sivalabs.devzone.domain.entities.Role;
 import com.sivalabs.devzone.domain.entities.User;
-import com.sivalabs.devzone.domain.models.AuthUserDTO;
+import com.sivalabs.devzone.domain.models.AuthUserResponse;
 import com.sivalabs.devzone.domain.models.ChangePasswordRequest;
+import com.sivalabs.devzone.domain.models.UpdateUserRequest;
+import com.sivalabs.devzone.domain.models.UserDTO;
 import com.sivalabs.devzone.domain.services.UserService;
+import java.util.stream.Collectors;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
+@AnyAuthenticatedUser
 @Slf4j
 public class AuthUserRestController {
     private final UserService userService;
-    private final SecurityUtils securityUtils;
 
-    @GetMapping("")
-    @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<AuthUserDTO> me() {
-        User loginUser = securityUtils.loginUser();
-        if (loginUser != null) {
-            AuthUserDTO userDTO = AuthUserDTO.builder()
-                .name(loginUser.getName())
-                .email(loginUser.getEmail())
-                .roles(loginUser.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
-                .build();
-            return ResponseEntity.ok(userDTO);
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    @GetMapping
+    public ResponseEntity<AuthUserResponse> me(@CurrentUser SecurityUser loginUser) {
+        User user = loginUser.getUser();
+        AuthUserResponse userDTO =
+                AuthUserResponse.builder()
+                        .name(user.getName())
+                        .email(user.getEmail())
+                        .roles(
+                                user.getRoles().stream()
+                                        .map(Role::getName)
+                                        .collect(Collectors.toList()))
+                        .build();
+        return ResponseEntity.ok(userDTO);
     }
 
-    @PostMapping("/change-password")
-    @AnyAuthenticatedUser
-    public void changePassword(@RequestBody @Valid ChangePasswordRequest changePasswordRequest,
-                               @CurrentUser User loginUser) {
-        String email = loginUser.getEmail();
+    @PutMapping
+    public UserDTO updateUser(
+            @RequestBody @Valid UpdateUserRequest updateUserRequest,
+            @CurrentUser SecurityUser loginUser) {
+        User user = loginUser.getUser();
+        Long id = user.getId();
+        log.info("process=update_user, user_id=" + id);
+        updateUserRequest.setId(id);
+        return userService.updateUser(updateUserRequest);
+    }
+
+    @PutMapping("/change-password")
+    public void changePassword(
+            @RequestBody @Valid ChangePasswordRequest changePasswordRequest,
+            @CurrentUser SecurityUser loginUser) {
+        String email = loginUser.getUser().getEmail();
         log.info("process=change_password, email=" + email);
         userService.changePassword(email, changePasswordRequest);
     }

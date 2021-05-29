@@ -1,12 +1,12 @@
 package com.sivalabs.devzone.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.validation.constraints.NotBlank;
+import lombok.Data;
 
 @Data
 public class LinkDTO {
@@ -37,6 +37,7 @@ public class LinkDTO {
         return this.tags;
     }
 
+    @JsonIgnore
     public String getTagsAsString() {
         return String.join(",", getTags());
     }

@@ -1,14 +1,13 @@
 package com.sivalabs.devzone.domain.entities;
 
-import lombok.Getter;
-import lombok.Setter;
-
+import java.io.Serializable;
+import java.util.Set;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
-import java.util.Set;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "users")
@@ -36,14 +35,12 @@ public class User extends BaseEntity implements Serializable {
     @Size(min = 4)
     private String password;
 
-    @Column
-    private String imageUrl;
+    @Column private String imageUrl;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(
-        name = "user_role",
-        joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "ID")},
-        inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ID")})
+            name = "user_role",
+            joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "ID")},
+            inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ID")})
     private Set<Role> roles;
-
 }

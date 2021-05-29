@@ -1,9 +1,8 @@
 package com.sivalabs.devzone.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
-import lombok.Setter;
-
+import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,8 +11,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
-import java.io.Serializable;
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "roles")
@@ -33,5 +32,4 @@ public class Role extends BaseEntity implements Serializable {
     @JsonIgnore
     @ManyToMany(mappedBy = "roles")
     private List<User> users;
-
 }

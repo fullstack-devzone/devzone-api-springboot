@@ -1,8 +1,7 @@
 package com.sivalabs.devzone.domain.models;
 
-import lombok.Data;
-
 import javax.validation.constraints.NotBlank;
+import lombok.Data;
 
 @Data
 public class ChangePasswordRequest {
@@ -12,5 +11,4 @@ public class ChangePasswordRequest {
 
     @NotBlank(message = "New password cannot be blank")
     String newPassword;
-
 }

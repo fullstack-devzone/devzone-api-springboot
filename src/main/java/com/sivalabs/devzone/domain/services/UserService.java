@@ -1,23 +1,25 @@
 package com.sivalabs.devzone.domain.services;
 
+import static com.sivalabs.devzone.domain.utils.AppConstants.ROLE_USER;
+
 import com.sivalabs.devzone.domain.entities.Role;
 import com.sivalabs.devzone.domain.entities.User;
 import com.sivalabs.devzone.domain.exceptions.DevZoneException;
 import com.sivalabs.devzone.domain.exceptions.ResourceNotFoundException;
 import com.sivalabs.devzone.domain.models.ChangePasswordRequest;
+import com.sivalabs.devzone.domain.models.UpdateUserRequest;
 import com.sivalabs.devzone.domain.models.UserDTO;
 import com.sivalabs.devzone.domain.repositories.RoleRepository;
 import com.sivalabs.devzone.domain.repositories.UserRepository;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Collections;
-import java.util.Optional;
-
-import static com.sivalabs.devzone.domain.utils.AppConstants.ROLE_USER;
 
 @Service
 @Transactional
@@ -27,6 +29,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+
+    @Transactional(readOnly = true)
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(UserDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
 
     @Transactional(readOnly = true)
     public Optional<UserDTO> getUserById(Long id) {
@@ -49,12 +58,17 @@ public class UserService {
         return UserDTO.fromEntity(userRepository.save(userEntity));
     }
 
-    public UserDTO updateUser(UserDTO user) {
-        User userById = userRepository.findById(user.getId())
-            .orElseThrow(() -> new ResourceNotFoundException("User with id " + user.getId() + " not found"));
-        User userEntity = user.toEntity();
-        userEntity.setPassword(userById.getPassword());
-        userEntity.setRoles(userById.getRoles());
+    public UserDTO updateUser(UpdateUserRequest updateUserRequest) {
+        User userEntity =
+                userRepository
+                        .findById(updateUserRequest.getId())
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "User with id "
+                                                        + updateUserRequest.getId()
+                                                        + " not found"));
+        userEntity.setName(updateUserRequest.getName());
         return UserDTO.fromEntity(userRepository.save(userEntity));
     }
 
@@ -63,8 +77,12 @@ public class UserService {
     }
 
     public void changePassword(String email, ChangePasswordRequest changePasswordRequest) {
-        User user = this.getUserByEmail(email)
-            .orElseThrow(() -> new ResourceNotFoundException("User with email " + email + " not found"));
+        User user =
+                this.getUserByEmail(email)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "User with email " + email + " not found"));
         if (passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
             user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
             userRepository.save(user);

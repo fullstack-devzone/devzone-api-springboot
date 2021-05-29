@@ -1,15 +1,7 @@
-apply plugin: 'checkstyle'
 apply plugin: 'pmd'
 apply plugin: 'jacoco'
 apply plugin: "com.github.spotbugs"
 apply plugin: "org.sonarqube"
-
-checkstyle {
-    toolVersion "${checkstyle_version}"
-    maxWarnings = 0
-    configFile = file("${project.rootDir}/build-config/checkstyle/checkstyle.xml")
-    sourceSets = [sourceSets.main]
-}
 
 pmd {
     toolVersion = "${pmd_version}"

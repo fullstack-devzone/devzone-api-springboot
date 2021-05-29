@@ -1,10 +1,12 @@
 package com.sivalabs.devzone.config;
 
+import javax.validation.Valid;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "devzone")
 @Data
+@Valid
 public class ApplicationProperties {
     private boolean importDataEnabled = true;
     private String importFilePath;

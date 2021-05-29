@@ -1,8 +1,7 @@
 package com.sivalabs.devzone.domain.entities;
 
-import lombok.Getter;
-import lombok.Setter;
-
+import java.io.Serializable;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,8 +14,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
-import java.io.Serializable;
-import java.util.Set;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "links")
@@ -38,14 +37,12 @@ public class Link extends BaseEntity implements Serializable {
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
-        name = "link_tag",
-        joinColumns = {@JoinColumn(name = "link_id", referencedColumnName = "ID")},
-        inverseJoinColumns = {@JoinColumn(name = "tag_id", referencedColumnName = "ID")}
-    )
+            name = "link_tag",
+            joinColumns = {@JoinColumn(name = "link_id", referencedColumnName = "ID")},
+            inverseJoinColumns = {@JoinColumn(name = "tag_id", referencedColumnName = "ID")})
     private Set<Tag> tags;
 
     @ManyToOne
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
-
 }

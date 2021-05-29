@@ -26,7 +26,8 @@ public class TimeUtils {
     }
 
     /**
-     * Converts time (in milliseconds) to human-readable format "w days, x hours, y minutes and z seconds."
+     * Converts time (in milliseconds) to human-readable format "w days, x hours, y minutes and z
+     * seconds."
      */
     public static String millisToLongDHMS(long durationVal) {
         long duration = durationVal;
@@ -36,13 +37,19 @@ public class TimeUtils {
             temp = duration / ONE_DAY;
             if (temp > 0) {
                 duration -= temp * ONE_DAY;
-                res.append(temp).append(" day").append(temp > 1 ? "s" : "").append(duration >= ONE_MINUTE ? ", " : "");
+                res.append(temp)
+                        .append(" day")
+                        .append(temp > 1 ? "s" : "")
+                        .append(duration >= ONE_MINUTE ? ", " : "");
             }
 
             temp = duration / ONE_HOUR;
             if (temp > 0) {
                 duration -= temp * ONE_HOUR;
-                res.append(temp).append(" hour").append(temp > 1 ? "s" : "").append(duration >= ONE_MINUTE ? ", " : "");
+                res.append(temp)
+                        .append(" hour")
+                        .append(temp > 1 ? "s" : "")
+                        .append(duration >= ONE_MINUTE ? ", " : "");
             }
 
             temp = duration / ONE_MINUTE;
@@ -74,5 +81,4 @@ public class TimeUtils {
             return duration + " millis";
         }
     }
-
 }

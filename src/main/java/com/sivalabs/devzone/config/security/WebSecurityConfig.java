@@ -30,8 +30,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService)
-            .passwordEncoder(passwordEncoder);
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }
 
     @Bean
@@ -54,26 +53,31 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            http
-                .antMatcher("/api/**")
+            http.antMatcher("/api/**")
                     .sessionManagement()
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                     .and()
                     .authorizeRequests()
-                        .antMatchers("/api/auth/**").permitAll()
-                        .antMatchers(HttpMethod.POST, "/api/users/change-password").authenticated()
-                        .antMatchers("/api/users/**").permitAll()
-                        // .antMatchers(HttpMethod.POST,"/users").hasAnyRole("USER", "ADMIN")
-                        // .anyRequest().authenticated()
-                        .and()
+                    .antMatchers("/api/auth/**")
+                    .permitAll()
+                    .antMatchers(HttpMethod.POST, "/api/users/change-password")
+                    .authenticated()
+                    .antMatchers("/api/users/**")
+                    .permitAll()
+                    // .antMatchers(HttpMethod.POST,"/users").hasAnyRole("USER", "ADMIN")
+                    // .anyRequest().authenticated()
+                    .and()
                     .addFilterBefore(tokenAuthenticationFilter, BasicAuthenticationFilter.class);
 
             http.csrf()
-                // .ignoringAntMatchers("/h2-console/**")//don't apply CSRF protection to /h2-console
-                .disable().headers().frameOptions().sameOrigin() // allow use of frame to same origin urls
+                    // .ignoringAntMatchers("/h2-console/**")//don't apply CSRF protection to
+                    // /h2-console
+                    .disable()
+                    .headers()
+                    .frameOptions()
+                    .sameOrigin() // allow use of frame to same origin urls
             ;
         }
-
     }
 
     @Configuration
@@ -83,28 +87,37 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         @Override
         public void configure(WebSecurity web) {
             web.ignoring()
-                .antMatchers("/static/**", "/js/**", "/css/**", "/images/**", "/favicon.ico", "/h2-console/**");
+                    .antMatchers(
+                            "/static/**",
+                            "/js/**",
+                            "/css/**",
+                            "/images/**",
+                            "/favicon.ico",
+                            "/h2-console/**");
         }
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            http
-                .csrf().disable()
-                .authorizeRequests()
-                    .antMatchers("/resources/**", "/webjars/**").permitAll()
-                    .antMatchers("/registration", "/forgot-password", "/reset-password").permitAll()
-                    .antMatchers("/h2-console/**").permitAll()
+            http.csrf()
+                    .disable()
+                    .authorizeRequests()
+                    .antMatchers("/resources/**", "/webjars/**")
+                    .permitAll()
+                    .antMatchers("/registration", "/forgot-password", "/reset-password")
+                    .permitAll()
+                    .antMatchers("/h2-console/**")
+                    .permitAll()
                     // .anyRequest().authenticated()
                     .and()
-                .formLogin()
+                    .formLogin()
                     .loginPage("/login")
-                        .defaultSuccessUrl("/")
-                        .failureUrl("/login?error").permitAll()
-                        .and()
-                .logout()
-                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout")).permitAll();
+                    .defaultSuccessUrl("/")
+                    .failureUrl("/login?error")
+                    .permitAll()
+                    .and()
+                    .logout()
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                    .permitAll();
         }
-
     }
-
 }
