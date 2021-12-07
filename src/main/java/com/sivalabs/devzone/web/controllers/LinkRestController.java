@@ -69,21 +69,21 @@ public class LinkRestController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @AnyAuthenticatedUser
-    public void createLink(
+    public LinkDTO createLink(
             @Valid @RequestBody CreateLinkRequest createLinkRequest,
             @CurrentUser SecurityUser loginUser) {
         createLinkRequest.setCreatedUserId(loginUser.getUser().getId());
-        linkService.createLink(createLinkRequest);
+        return linkService.createLink(createLinkRequest);
     }
 
     @PutMapping("/{id}")
     @AnyAuthenticatedUser
-    public void updateLink(
+    public LinkDTO updateLink(
             @PathVariable Long id, @Valid @RequestBody UpdateLinkRequest updateLinkRequest) {
         LinkDTO link = linkService.getLinkById(id).orElseThrow();
         this.checkPrivilege(id, link);
         updateLinkRequest.setId(id);
-        linkService.updateLink(updateLinkRequest);
+        return linkService.updateLink(updateLinkRequest);
     }
 
     @DeleteMapping("/{id}")
@@ -96,7 +96,8 @@ public class LinkRestController {
     }
 
     private void checkPrivilege(Long linkId, LinkDTO link) {
-        if (securityService.canCurrentUserEditLink(link.getCreatedUserId())) {
+        final boolean canEditLink = securityService.canCurrentUserEditLink(link.getCreatedUserId());
+        if (!canEditLink) {
             throw new ResourceNotFoundException("Link not found with id=" + linkId);
         }
     }

@@ -1,13 +1,3 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath "com.avast.gradle:gradle-docker-compose-plugin:${docker_compose_plugin_version}"
-        classpath "org.owasp:dependency-check-gradle:5.2.1"
-    }
-}
-
 plugins {
     id "java-library"
     id "org.springframework.boot" version "${spring_boot_version}"
@@ -18,10 +8,8 @@ plugins {
     id "org.sonarqube" version "3.0" apply false
 }
 apply plugin: "idea"
-apply plugin: "docker-compose"
 apply from: "gradle/tests.gradle"
 apply from: "gradle/code-quality.gradle"
-//apply from: "gradle/owasp.gradle"
 
 group = "com.sivalabs"
 version = "0.0.1-SNAPSHOT"
@@ -67,7 +55,6 @@ dependencies {
 
     implementation "com.opencsv:opencsv:${opencsv_version}"
     implementation "org.jsoup:jsoup:${jsoup_version}"
-    implementation "com.github.ulisesbocchio:jasypt-spring-boot-starter:${jasypt_version}"
     implementation "org.apache.commons:commons-lang3:${commons_lang_version}"
     implementation "commons-io:commons-io:${commons_io_version}"
 
@@ -98,19 +85,12 @@ bootBuildImage {
     imageName = "sivaprasadreddy/devzone-api-springboot"
 }
 
-//dockerCompose.isRequiredBy(test)
-dockerCompose {
-    useComposeFiles = ["docker-compose.yml"]
-    //isRequiredBy(project.tasks.test)
-}
-
 compileJava.dependsOn processResources
 processResources.dependsOn bootBuildInfo
 
 bootRun {
     args = ["--spring.profiles.active=local"]
 }
-bootRun.dependsOn composeUp
 
 gitProperties {
     failOnNoGitDirectory = false
@@ -120,5 +100,5 @@ gitProperties {
 googleJavaFormat {
     options style: 'AOSP'
 }
-
+verifyGoogleJavaFormat.dependsOn(tasks.googleJavaFormat)
 check.dependsOn verifyGoogleJavaFormat

@@ -9,10 +9,19 @@ create table users (
     password varchar(255) not null,
     name varchar(255) not null,
     image_url varchar(255),
+    bio varchar(1024),
+    location varchar(512),
+    github_username varchar(512),
+    twitter_username varchar(512),
     created_at timestamp,
     updated_at timestamp,
     primary key (id),
     CONSTRAINT user_email_unique UNIQUE(email)
+);
+
+create table user_skills (
+   user_id bigint REFERENCES users(id),
+   skill varchar(512)
 );
 
 create table roles (

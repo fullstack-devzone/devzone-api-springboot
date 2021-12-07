@@ -67,14 +67,14 @@ public class LinkService {
         link.setUrl(createLinkRequest.getUrl());
         link.setTitle(getTitle(createLinkRequest.getUrl(), createLinkRequest.getTitle()));
         link.setTags(getOrCreateTags(createLinkRequest.getTags()));
-        link.setCreatedBy(userRepository.getOne(createLinkRequest.getCreatedUserId()));
+        link.setCreatedBy(userRepository.getById(createLinkRequest.getCreatedUserId()));
 
         log.debug("process=create_link, url={}", link.getUrl());
         return linkMapper.toDTO(linkRepository.save(link));
     }
 
     public LinkDTO updateLink(UpdateLinkRequest updateLinkRequest) {
-        Link link = linkRepository.findById(updateLinkRequest.getId()).get();
+        Link link = linkRepository.findById(updateLinkRequest.getId()).orElse(new Link());
         link.setUrl(updateLinkRequest.getUrl());
         link.setTitle(getTitle(updateLinkRequest.getUrl(), updateLinkRequest.getTitle()));
         link.setTags(getOrCreateTags(updateLinkRequest.getTags()));

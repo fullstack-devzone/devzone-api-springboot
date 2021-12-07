@@ -30,9 +30,11 @@ public class SecurityService {
     public boolean canCurrentUserEditLink(Long linkCreatedUserId) {
         final SecurityUser securityUser = loginUser();
         User loginUser = securityUser == null ? null : securityUser.getUser();
-        return loginUser != null
-                && (Objects.equals(linkCreatedUserId, loginUser.getId())
-                        || isCurrentUserAdminOrModerator(loginUser));
+        if (loginUser == null) {
+            return false;
+        }
+        final boolean isOwner = Objects.equals(linkCreatedUserId, loginUser.getId());
+        return isOwner || isCurrentUserAdminOrModerator(loginUser);
     }
 
     public Long loginUserId() {

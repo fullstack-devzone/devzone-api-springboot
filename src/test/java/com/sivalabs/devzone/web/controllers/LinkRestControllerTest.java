@@ -1,30 +1,30 @@
 package com.sivalabs.devzone.web.controllers;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.sivalabs.devzone.common.AbstractWebMvcTest;
-import com.sivalabs.devzone.domain.models.LinksDTO;
-import com.sivalabs.devzone.domain.services.LinkService;
-import com.sivalabs.devzone.domain.services.SecurityService;
+import com.sivalabs.devzone.common.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Pageable;
 
-@WebMvcTest(controllers = LinkRestController.class)
-class LinkRestControllerTest extends AbstractWebMvcTest {
-    @MockBean protected LinkService linkService;
-
-    @MockBean protected SecurityService securityService;
+class LinkRestControllerTest extends AbstractIntegrationTest {
 
     @Test
     void shouldFetchLinksFirstPage() throws Exception {
-        LinksDTO linksDTO = new LinksDTO();
-        given(linkService.getAllLinks(any(Pageable.class))).willReturn(linksDTO);
-
         this.mockMvc.perform(get("/api/links")).andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldFetchLinksSecondPage() throws Exception {
+        this.mockMvc.perform(get("/api/links?page=2")).andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldFetchLinksByTag() throws Exception {
+        this.mockMvc.perform(get("/api/links?tag=spring-boot")).andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldSearchLinks() throws Exception {
+        this.mockMvc.perform(get("/api/links?query=spring")).andExpect(status().isOk());
     }
 }

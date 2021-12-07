@@ -69,6 +69,11 @@ public class UserService {
                                                         + updateUserRequest.getId()
                                                         + " not found"));
         userEntity.setName(updateUserRequest.getName());
+        userEntity.setBio(updateUserRequest.getBio());
+        userEntity.setLocation(updateUserRequest.getLocation());
+        userEntity.setGithubUsername(updateUserRequest.getGithubUsername());
+        userEntity.setTwitterUsername(updateUserRequest.getTwitterUsername());
+        userEntity.setSkills(updateUserRequest.getSkills());
         return UserDTO.fromEntity(userRepository.save(userEntity));
     }
 

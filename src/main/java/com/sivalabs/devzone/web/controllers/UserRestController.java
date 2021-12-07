@@ -8,6 +8,7 @@ import com.sivalabs.devzone.domain.models.CreateUserRequest;
 import com.sivalabs.devzone.domain.models.UserDTO;
 import com.sivalabs.devzone.domain.services.SecurityService;
 import com.sivalabs.devzone.domain.services.UserService;
+import com.sivalabs.devzone.web.exceptions.BadRequestException;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,14 +43,10 @@ public class UserRestController {
     @ResponseStatus(CREATED)
     public UserDTO createUser(@RequestBody @Valid CreateUserRequest createUserRequest) {
         log.info("process=create_user, user_email=" + createUserRequest.getEmail());
-        UserDTO userDTO =
-                new UserDTO(
-                        null,
-                        createUserRequest.getName(),
-                        createUserRequest.getEmail(),
-                        createUserRequest.getPassword(),
-                        null,
-                        null);
+        UserDTO userDTO = new UserDTO();
+        userDTO.setName(createUserRequest.getName());
+        userDTO.setEmail(createUserRequest.getEmail());
+        userDTO.setPassword(createUserRequest.getPassword());
         return userService.createUser(userDTO);
     }
 
@@ -57,16 +54,17 @@ public class UserRestController {
     @AnyAuthenticatedUser
     public void deleteUser(@PathVariable Long id) {
         log.info("process=delete_user, user_id=" + id);
-        userService
-                .getUserById(id)
-                .map(
-                        u -> {
-                            if (!id.equals(securityService.loginUserId())
-                                    && !securityService.isCurrentUserAdmin()) {
-                                throw new ResourceNotFoundException("User not found with id=" + id);
-                            }
-                            userService.deleteUser(id);
-                            return u;
-                        });
+        UserDTO userDTO =
+                userService
+                        .getUserById(id)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "User not found with id=" + id));
+        if (!userDTO.getId().equals(securityService.loginUserId())
+                && !securityService.isCurrentUserAdmin()) {
+            throw new BadRequestException("Bad request to delete User with id=" + id);
+        }
+        userService.deleteUser(id);
     }
 }
