@@ -10,6 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class ApplicationProperties {
     private boolean importDataEnabled = true;
     private String importFilePath;
+    private String uploadDir;
 
     private JwtConfig jwt = new JwtConfig();
 

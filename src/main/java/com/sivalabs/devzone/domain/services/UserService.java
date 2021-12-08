@@ -11,12 +11,14 @@ import com.sivalabs.devzone.domain.models.UpdateUserRequest;
 import com.sivalabs.devzone.domain.models.UserDTO;
 import com.sivalabs.devzone.domain.repositories.RoleRepository;
 import com.sivalabs.devzone.domain.repositories.UserRepository;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @RequiredArgsConstructor
 public class UserService {
+    private static final String PROFILE_IMAGE_EXTN = ".png";
+    private final FileStorageService fileStorageService;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
@@ -94,5 +98,22 @@ public class UserService {
         } else {
             throw new DevZoneException("Current password doesn't match");
         }
+    }
+
+    public String updateUserProfilePic(Long userId, InputStream inputStream) {
+        String fileName = userId + PROFILE_IMAGE_EXTN;
+        fileStorageService.storeFile(inputStream, fileName);
+        String imageUrl = "/api/users/" + userId + "/profile_pic";
+        userRepository.updateImageUrl(userId, imageUrl);
+        log.info("File uploaded to: {}", fileName);
+        return imageUrl;
+    }
+
+    public Resource getUserImageUrl(Long userId) {
+        String imageUrl = userRepository.getImageUrl(userId);
+        if (imageUrl == null) {
+            return null;
+        }
+        return fileStorageService.loadFileAsResource(userId + PROFILE_IMAGE_EXTN);
     }
 }

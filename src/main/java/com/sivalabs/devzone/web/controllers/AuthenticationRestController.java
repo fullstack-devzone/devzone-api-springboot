@@ -73,6 +73,7 @@ public class AuthenticationRestController {
         return AuthenticationResponse.builder()
                 .user(
                         AuthUserResponse.builder()
+                                .id(user.getUser().getId())
                                 .name(user.getUser().getName())
                                 .email(user.getUser().getEmail())
                                 .roles(
