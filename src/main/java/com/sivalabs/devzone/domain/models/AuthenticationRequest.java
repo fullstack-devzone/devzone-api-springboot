@@ -1,9 +1,11 @@
 package com.sivalabs.devzone.domain.models;
 
 import javax.validation.constraints.NotBlank;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 public class AuthenticationRequest {
     @NotBlank(message = "UserName cannot be blank")
     private String username;

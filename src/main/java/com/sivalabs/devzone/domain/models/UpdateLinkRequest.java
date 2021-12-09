@@ -3,9 +3,11 @@ package com.sivalabs.devzone.domain.models;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 public class UpdateLinkRequest {
     private Long id;
 

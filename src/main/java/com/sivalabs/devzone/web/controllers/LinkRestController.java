@@ -9,7 +9,6 @@ import com.sivalabs.devzone.domain.exceptions.ResourceNotFoundException;
 import com.sivalabs.devzone.domain.models.CreateLinkRequest;
 import com.sivalabs.devzone.domain.models.LinkDTO;
 import com.sivalabs.devzone.domain.models.LinksDTO;
-import com.sivalabs.devzone.domain.models.UpdateLinkRequest;
 import com.sivalabs.devzone.domain.services.LinkService;
 import com.sivalabs.devzone.domain.services.SecurityService;
 import javax.validation.Valid;
@@ -25,7 +24,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,7 +39,7 @@ public class LinkRestController {
     private final SecurityService securityService;
 
     @GetMapping
-    public LinksDTO showLinks(
+    public LinksDTO getLinks(
             @RequestParam(name = "query", required = false) String query,
             @RequestParam(name = "tag", required = false) String tag,
             @PageableDefault(size = 15)
@@ -76,27 +74,24 @@ public class LinkRestController {
         return linkService.createLink(createLinkRequest);
     }
 
-    @PutMapping("/{id}")
-    @AnyAuthenticatedUser
-    public LinkDTO updateLink(
-            @PathVariable Long id, @Valid @RequestBody UpdateLinkRequest updateLinkRequest) {
-        LinkDTO link = linkService.getLinkById(id).orElseThrow();
-        this.checkPrivilege(id, link);
-        updateLinkRequest.setId(id);
-        return linkService.updateLink(updateLinkRequest);
-    }
-
     @DeleteMapping("/{id}")
     @AnyAuthenticatedUser
     public ResponseEntity<Void> deleteLink(@PathVariable Long id) {
-        LinkDTO link = linkService.getLinkById(id).orElseThrow();
+        LinkDTO link =
+                linkService
+                        .getLinkById(id)
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Link with id=" + id + " not found"));
         this.checkPrivilege(id, link);
         linkService.deleteLink(id);
         return ResponseEntity.ok().build();
     }
 
     private void checkPrivilege(Long linkId, LinkDTO link) {
-        final boolean canEditLink = securityService.canCurrentUserEditLink(link.getCreatedUserId());
+        final boolean canEditLink =
+                securityService.canCurrentUserEditLink(link.getCreatedBy().getId());
         if (!canEditLink) {
             throw new ResourceNotFoundException("Link not found with id=" + linkId);
         }

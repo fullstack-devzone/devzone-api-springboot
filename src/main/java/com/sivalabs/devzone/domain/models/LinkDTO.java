@@ -1,14 +1,15 @@
 package com.sivalabs.devzone.domain.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 public class LinkDTO {
     private Long id;
 
@@ -17,11 +18,8 @@ public class LinkDTO {
 
     private String title;
 
-    @JsonProperty("created_user_id")
-    private Long createdUserId;
-
-    @JsonProperty("created_user_name")
-    private String createdUserName;
+    @JsonProperty("createdBy")
+    private CreatedUser createdBy;
 
     @JsonProperty("created_at")
     private LocalDateTime createdAt;
@@ -31,14 +29,10 @@ public class LinkDTO {
 
     private List<String> tags = new ArrayList<>();
 
-    private boolean editable;
-
-    public List<String> getTags() {
-        return this.tags;
-    }
-
-    @JsonIgnore
-    public String getTagsAsString() {
-        return String.join(",", getTags());
+    @Setter
+    @Getter
+    public static class CreatedUser {
+        private Long id;
+        private String name;
     }
 }

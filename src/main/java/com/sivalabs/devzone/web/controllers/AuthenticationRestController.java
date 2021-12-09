@@ -1,17 +1,17 @@
 package com.sivalabs.devzone.web.controllers;
 
 import com.sivalabs.devzone.annotations.AnyAuthenticatedUser;
+import com.sivalabs.devzone.annotations.CurrentUser;
 import com.sivalabs.devzone.config.ApplicationProperties;
 import com.sivalabs.devzone.config.security.SecurityUser;
-import com.sivalabs.devzone.config.security.SecurityUserDetailsService;
 import com.sivalabs.devzone.config.security.TokenHelper;
 import com.sivalabs.devzone.domain.entities.Role;
+import com.sivalabs.devzone.domain.entities.User;
 import com.sivalabs.devzone.domain.models.AuthUserResponse;
 import com.sivalabs.devzone.domain.models.AuthenticationRequest;
 import com.sivalabs.devzone.domain.models.AuthenticationResponse;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,17 +19,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthenticationRestController {
     private final AuthenticationManager authenticationManager;
-    private final SecurityUserDetailsService userDetailsService;
     private final TokenHelper tokenHelper;
     private final ApplicationProperties applicationProperties;
 
@@ -52,21 +48,20 @@ public class AuthenticationRestController {
         }
     }
 
-    @PostMapping("/refresh")
+    @GetMapping("/me")
     @AnyAuthenticatedUser
-    public ResponseEntity<AuthenticationResponse> refreshAuthenticationToken(
-            HttpServletRequest request) {
-        String authToken = tokenHelper.getToken(request);
-        if (authToken != null) {
-            String email = tokenHelper.getUsernameFromToken(authToken);
-            SecurityUser user = (SecurityUser) userDetailsService.loadUserByUsername(email);
-            Boolean validToken = tokenHelper.validateToken(authToken, user);
-            if (validToken) {
-                String refreshedToken = tokenHelper.refreshToken(authToken);
-                return ResponseEntity.ok(getAuthenticationResponse(user, refreshedToken));
-            }
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    public ResponseEntity<AuthUserResponse> me(@CurrentUser SecurityUser loginUser) {
+        User user = loginUser.getUser();
+        AuthUserResponse userDTO =
+                AuthUserResponse.builder()
+                        .name(user.getName())
+                        .email(user.getEmail())
+                        .roles(
+                                user.getRoles().stream()
+                                        .map(Role::getName)
+                                        .collect(Collectors.toList()))
+                        .build();
+        return ResponseEntity.ok(userDTO);
     }
 
     private AuthenticationResponse getAuthenticationResponse(SecurityUser user, String token) {

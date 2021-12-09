@@ -7,12 +7,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/api")
 @Slf4j
-public class UtilitiesController {
+public class PageMetadataController {
 
     @GetMapping("/page-metadata")
     public Map<String, String> getPageMetadata(@RequestParam String url) {
