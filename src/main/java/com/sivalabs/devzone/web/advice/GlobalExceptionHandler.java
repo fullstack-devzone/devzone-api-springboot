@@ -2,7 +2,6 @@ package com.sivalabs.devzone.web.advice;
 
 import com.sivalabs.devzone.domain.exceptions.DevZoneException;
 import com.sivalabs.devzone.domain.exceptions.ResourceNotFoundException;
-import com.sivalabs.devzone.web.controllers.LinkRestController;
 import com.sivalabs.devzone.web.exceptions.BadRequestException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,7 @@ import org.zalando.problem.Status;
 import org.zalando.problem.spring.web.advice.ProblemHandling;
 
 @Slf4j
-@RestControllerAdvice(basePackageClasses = LinkRestController.class)
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     private final ProblemHandling translator = new ProblemHandling() {};

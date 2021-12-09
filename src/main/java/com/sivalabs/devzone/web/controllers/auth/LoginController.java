@@ -1,7 +1,5 @@
-package com.sivalabs.devzone.web.controllers;
+package com.sivalabs.devzone.web.controllers.auth;
 
-import com.sivalabs.devzone.annotations.AnyAuthenticatedUser;
-import com.sivalabs.devzone.annotations.CurrentUser;
 import com.sivalabs.devzone.config.ApplicationProperties;
 import com.sivalabs.devzone.config.security.SecurityUser;
 import com.sivalabs.devzone.config.security.TokenHelper;
@@ -22,14 +20,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
 @RequiredArgsConstructor
-public class AuthenticationRestController {
+public class LoginController {
     private final AuthenticationManager authenticationManager;
     private final TokenHelper tokenHelper;
     private final ApplicationProperties applicationProperties;
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<AuthenticationResponse> createAuthenticationToken(
             @RequestBody AuthenticationRequest credentials) {
         try {
@@ -48,38 +46,23 @@ public class AuthenticationRestController {
         }
     }
 
-    @GetMapping("/me")
-    @AnyAuthenticatedUser
-    public ResponseEntity<AuthUserResponse> me(@CurrentUser SecurityUser loginUser) {
+    private AuthenticationResponse getAuthenticationResponse(SecurityUser loginUser, String token) {
         User user = loginUser.getUser();
-        AuthUserResponse userDTO =
-                AuthUserResponse.builder()
-                        .name(user.getName())
-                        .email(user.getEmail())
-                        .roles(
-                                user.getRoles().stream()
-                                        .map(Role::getName)
-                                        .collect(Collectors.toList()))
-                        .build();
-        return ResponseEntity.ok(userDTO);
-    }
-
-    private AuthenticationResponse getAuthenticationResponse(SecurityUser user, String token) {
         return AuthenticationResponse.builder()
-                .user(
-                        AuthUserResponse.builder()
-                                .id(user.getUser().getId())
-                                .name(user.getUser().getName())
-                                .email(user.getUser().getEmail())
-                                .roles(
-                                        user.getUser().getRoles().stream()
-                                                .map(Role::getName)
-                                                .collect(Collectors.toList()))
-                                .build())
+                .user(this.getAuthUserResponse(user))
                 .accessToken(token)
                 .expiresAt(
                         LocalDateTime.now()
                                 .plusSeconds(applicationProperties.getJwt().getExpiresIn()))
+                .build();
+    }
+
+    private AuthUserResponse getAuthUserResponse(User user) {
+        return AuthUserResponse.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .roles(user.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
                 .build();
     }
 }

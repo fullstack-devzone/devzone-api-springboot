@@ -1,13 +1,31 @@
-version: '3.8'
+version: '3.5'
 services:
+    devzone-db:
+        image: postgres:14.1-alpine
+        container_name: devzone-db
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+            - POSTGRES_DB=postgres
+        ports:
+            - "15432:5432"
+        healthcheck:
+            test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        restart: unless-stopped
 
-  devzone-db:
-    image: postgres:10.7
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=postgres
-      - PGDATA=/data/postgres
-    ports:
-      - "5432:5432"
-    restart: unless-stopped
+    devzone-api-springboot:
+        build: .
+        ports:
+            - "18080:8080"
+        restart: unless-stopped
+        depends_on:
+            - devzone-db
+        environment:
+            SPRING_PROFILES_ACTIVE: docker
+            SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+            SPRING_DATASOURCE_URL: jdbc:postgresql://devzone-db:5432/postgres
+            SPRING_DATASOURCE_USERNAME: postgres
+            SPRING_DATASOURCE_PASSWORD: postgres

@@ -2,13 +2,14 @@ package com.sivalabs.devzone.domain.repositories;
 
 import com.sivalabs.devzone.domain.entities.User;
 import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository {
 
     Optional<User> findByEmail(String email);
 
     boolean existsByEmail(String email);
+
+    User save(User user);
+
+    Optional<User> findById(Long userId);
 }

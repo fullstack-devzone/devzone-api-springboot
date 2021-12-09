@@ -1,4 +1,4 @@
-package com.sivalabs.devzone.web.controllers;
+package com.sivalabs.devzone.web.controllers.links;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -14,8 +14,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Pageable;
 
-@WebMvcTest(controllers = LinkRestController.class)
-class LinkRestControllerUnitTest extends AbstractWebMvcTest {
+@WebMvcTest(controllers = GetLinksController.class)
+class GetLinksControllerUnitTest extends AbstractWebMvcTest {
     @MockBean protected LinkService linkService;
 
     @MockBean protected SecurityService securityService;

@@ -1,4 +1,4 @@
-package com.sivalabs.devzone.web.controllers;
+package com.sivalabs.devzone.web.controllers.links;
 
 import com.sivalabs.devzone.domain.entities.Tag;
 import com.sivalabs.devzone.domain.services.LinkService;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/tags")
 @RequiredArgsConstructor
 @Slf4j
-public class TagRestController {
+public class GetAllTagsController {
     private final LinkService linkService;
 
     @GetMapping

@@ -5,21 +5,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sivalabs.devzone.domain.entities.Link;
 import java.util.List;
-import javax.persistence.EntityManager;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
-@Slf4j
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@DataJpaTest(
+        properties = {
+            "spring.test.database.replace=NONE",
+            "spring.datasource.url=jdbc:tc:postgresql:12.3:///testdb"
+        })
 @ActiveProfiles(PROFILE_IT)
 class LinkRepositoryTest {
-
-    @Autowired private EntityManager entityManager;
 
     @Autowired private LinkRepository linkRepository;
 

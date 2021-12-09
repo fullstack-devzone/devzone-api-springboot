@@ -3,7 +3,7 @@ test {
     exclude "**/*IT*", "**/*IntegrationTest*"
     testLogging {
         events = ["PASSED", "FAILED", "SKIPPED"]
-        //showStandardStreams = true
+        showStandardStreams = true
         exceptionFormat = "full"
     }
 }
@@ -16,7 +16,7 @@ task integrationTest(type: Test) {
 
     testLogging {
         events = ["PASSED", "FAILED", "SKIPPED"]
-        //showStandardStreams = true
+        showStandardStreams = true
         exceptionFormat = "full"
     }
 }

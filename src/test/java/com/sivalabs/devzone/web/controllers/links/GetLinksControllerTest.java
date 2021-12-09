@@ -1,4 +1,4 @@
-package com.sivalabs.devzone.web.controllers;
+package com.sivalabs.devzone.web.controllers.links;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.sivalabs.devzone.common.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
 
-class LinkRestControllerTest extends AbstractIntegrationTest {
+class GetLinksControllerTest extends AbstractIntegrationTest {
 
     @Test
     void shouldFetchLinksFirstPage() throws Exception {

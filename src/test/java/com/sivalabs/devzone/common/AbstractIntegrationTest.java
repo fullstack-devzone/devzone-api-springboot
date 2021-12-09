@@ -9,11 +9,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 @ActiveProfiles(PROFILE_IT)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @AutoConfigureMockMvc
-public abstract class AbstractIntegrationTest {
+@Testcontainers(disabledWithoutDocker = true)
+public abstract class AbstractIntegrationTest extends TestContainersInitializer {
 
     @Autowired protected MockMvc mockMvc;
 

@@ -7,7 +7,6 @@ import com.sivalabs.devzone.domain.mappers.LinkMapper;
 import com.sivalabs.devzone.domain.models.CreateLinkRequest;
 import com.sivalabs.devzone.domain.models.LinkDTO;
 import com.sivalabs.devzone.domain.models.LinksDTO;
-import com.sivalabs.devzone.domain.models.UpdateLinkRequest;
 import com.sivalabs.devzone.domain.repositories.LinkRepository;
 import com.sivalabs.devzone.domain.repositories.TagRepository;
 import com.sivalabs.devzone.domain.repositories.UserRepository;
@@ -58,7 +57,6 @@ public class LinkService {
 
     @Transactional(readOnly = true)
     public Optional<LinkDTO> getLinkById(Long id) {
-        log.debug("process=get_link_by_id, id={}", id);
         return linkRepository.findById(id).map(linkMapper::toDTO);
     }
 
@@ -67,28 +65,16 @@ public class LinkService {
         link.setUrl(createLinkRequest.getUrl());
         link.setTitle(getTitle(createLinkRequest.getUrl(), createLinkRequest.getTitle()));
         link.setTags(getOrCreateTags(createLinkRequest.getTags()));
-        link.setCreatedBy(userRepository.getById(createLinkRequest.getCreatedUserId()));
-
-        log.debug("process=create_link, url={}", link.getUrl());
-        return linkMapper.toDTO(linkRepository.save(link));
-    }
-
-    public LinkDTO updateLink(UpdateLinkRequest updateLinkRequest) {
-        Link link = linkRepository.findById(updateLinkRequest.getId()).orElse(new Link());
-        link.setUrl(updateLinkRequest.getUrl());
-        link.setTitle(getTitle(updateLinkRequest.getUrl(), updateLinkRequest.getTitle()));
-        link.setTags(getOrCreateTags(updateLinkRequest.getTags()));
-        log.debug("process=update_link, url={}", link.getUrl());
+        link.setCreatedBy(
+                userRepository.findById(createLinkRequest.getCreatedUserId()).orElseThrow());
         return linkMapper.toDTO(linkRepository.save(link));
     }
 
     public void deleteLink(Long id) {
-        log.debug("process=delete_link_by_id, id={}", id);
         linkRepository.deleteById(id);
     }
 
     public void deleteAllLinks() {
-        log.debug("process=delete_all_links");
         linkRepository.deleteAll();
     }
 
@@ -99,7 +85,6 @@ public class LinkService {
     }
 
     private LinksDTO buildLinksResult(Page<Link> links) {
-        log.trace("Found {} links in page", links.getNumberOfElements());
         return new LinksDTO(links.map(linkMapper::toDTO));
     }
 
