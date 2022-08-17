@@ -1,7 +1,5 @@
 package com.sivalabs.devzone.links.web.controllers;
 
-import static org.springframework.data.domain.Sort.Direction.DESC;
-
 import com.sivalabs.devzone.common.annotations.AnyAuthenticatedUser;
 import com.sivalabs.devzone.common.annotations.CurrentUser;
 import com.sivalabs.devzone.common.exceptions.ResourceNotFoundException;
@@ -16,8 +14,6 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,7 +31,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Slf4j
 public class LinkController {
-    private static final int PAGE_SIZE = 10;
     private final LinkService linkService;
     private final SecurityService securityService;
 
@@ -44,16 +39,15 @@ public class LinkController {
             @RequestParam(name = "tag", defaultValue = "") String tag,
             @RequestParam(name = "query", defaultValue = "") String query,
             @RequestParam(name = "page", defaultValue = "1") Integer page) {
-        Pageable pageable = PageRequest.of(page < 1 ? 0 : page - 1, PAGE_SIZE, DESC, "createdAt");
         if (StringUtils.isNotEmpty(query)) {
-            log.info("Searching links for {} with page: {}", query, pageable.getPageNumber());
-            return linkService.searchLinks(query, pageable);
+            log.info("Searching links for {} with page: {}", query, page);
+            return linkService.searchLinks(query, page);
         } else if (StringUtils.isNotEmpty(tag)) {
-            log.info("Fetching links for tag {} with page: {}", tag, pageable.getPageNumber());
-            return linkService.getLinksByTag(tag, pageable);
+            log.info("Fetching links for tag {} with page: {}", tag, page);
+            return linkService.getLinksByTag(tag, page);
         } else {
-            log.info("Fetching links with page: {}", pageable.getPageNumber());
-            return linkService.getAllLinks(pageable);
+            log.info("Fetching links with page: {}", page);
+            return linkService.getAllLinks(page);
         }
     }
 

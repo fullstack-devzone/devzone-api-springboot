@@ -1,5 +1,7 @@
 package com.sivalabs.devzone.links.services;
 
+import static org.springframework.data.domain.Sort.Direction.DESC;
+
 import com.sivalabs.devzone.common.exceptions.ResourceNotFoundException;
 import com.sivalabs.devzone.links.entities.Link;
 import com.sivalabs.devzone.links.entities.Tag;
@@ -20,10 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,13 +31,16 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class LinkService {
+    private static final int PAGE_SIZE = 10;
+
     private final LinkRepository linkRepository;
     private final TagRepository tagRepository;
     private final UserRepository userRepository;
     private final LinkMapper linkMapper;
 
     @Transactional(readOnly = true)
-    public LinksDTO getAllLinks(Pageable pageable) {
+    public LinksDTO getAllLinks(int page) {
+        Pageable pageable = PageRequest.of(page < 1 ? 0 : page - 1, PAGE_SIZE, DESC, "createdAt");
         Page<Long> pageOfLinkIds = linkRepository.fetchLinkIds(pageable);
         List<Link> links =
                 linkRepository.findLinksWithTags(pageOfLinkIds.getContent(), pageable.getSort());
@@ -47,7 +49,8 @@ public class LinkService {
     }
 
     @Transactional(readOnly = true)
-    public LinksDTO searchLinks(String query, Pageable pageable) {
+    public LinksDTO searchLinks(String query, int page) {
+        Pageable pageable = PageRequest.of(page < 1 ? 0 : page - 1, PAGE_SIZE, DESC, "createdAt");
         Page<Long> pageOfLinkIds =
                 linkRepository.fetchLinkIdsByTitleContainingIgnoreCase(query, pageable);
         List<Link> links =
@@ -57,7 +60,8 @@ public class LinkService {
     }
 
     @Transactional(readOnly = true)
-    public LinksDTO getLinksByTag(String tag, Pageable pageable) {
+    public LinksDTO getLinksByTag(String tag, int page) {
+        Pageable pageable = PageRequest.of(page < 1 ? 0 : page - 1, PAGE_SIZE, DESC, "createdAt");
         Optional<Tag> tagOptional = tagRepository.findByName(tag);
         if (tagOptional.isEmpty()) {
             throw new ResourceNotFoundException("Tag " + tag + " not found");

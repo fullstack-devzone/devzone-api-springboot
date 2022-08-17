@@ -12,7 +12,6 @@ import com.sivalabs.devzone.users.services.SecurityService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Pageable;
 
 @WebMvcTest(controllers = LinkController.class)
 class LinkControllerTest extends AbstractWebMvcTest {
@@ -23,7 +22,7 @@ class LinkControllerTest extends AbstractWebMvcTest {
     @Test
     void shouldFetchLinksFirstPage() throws Exception {
         LinksDTO linksDTO = new LinksDTO();
-        given(linkService.getAllLinks(any(Pageable.class))).willReturn(linksDTO);
+        given(linkService.getAllLinks(any(Integer.class))).willReturn(linksDTO);
 
         this.mockMvc.perform(get("/api/links")).andExpect(status().isOk());
     }
