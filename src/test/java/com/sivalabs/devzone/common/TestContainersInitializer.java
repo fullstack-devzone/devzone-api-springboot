@@ -6,7 +6,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 
 public class TestContainersInitializer {
     static final PostgreSQLContainer<?> sqlContainer =
-            new PostgreSQLContainer<>("postgres:12.3")
+            new PostgreSQLContainer<>("postgres:14-alpine")
                     .withDatabaseName("integration-tests-db")
                     .withUsername("username")
                     .withPassword("password");

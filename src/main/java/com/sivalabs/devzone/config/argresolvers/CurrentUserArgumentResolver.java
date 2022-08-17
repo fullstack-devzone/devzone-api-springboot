@@ -1,7 +1,7 @@
 package com.sivalabs.devzone.config.argresolvers;
 
-import com.sivalabs.devzone.annotations.CurrentUser;
-import com.sivalabs.devzone.domain.services.SecurityService;
+import com.sivalabs.devzone.common.annotations.CurrentUser;
+import com.sivalabs.devzone.users.services.SecurityService;
 import java.lang.annotation.Annotation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -27,8 +27,7 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
             MethodParameter methodParameter,
             ModelAndViewContainer modelAndViewContainer,
             NativeWebRequest nativeWebRequest,
-            WebDataBinderFactory webDataBinderFactory)
-            throws Exception {
+            WebDataBinderFactory webDataBinderFactory) {
         return securityService.loginUser();
     }
 

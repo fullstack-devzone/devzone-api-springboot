@@ -1,7 +1,7 @@
 package com.sivalabs.devzone.config.security;
 
-import com.sivalabs.devzone.domain.entities.User;
-import com.sivalabs.devzone.domain.services.UserService;
+import com.sivalabs.devzone.users.entities.User;
+import com.sivalabs.devzone.users.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

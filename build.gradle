@@ -1,22 +1,22 @@
 plugins {
-    id "java-library"
-    id "org.springframework.boot" version "${spring_boot_version}"
-    id "io.spring.dependency-management" version "${spring_dependency_management_version}"
-    id "com.gorylenko.gradle-git-properties" version "${git_properties_plugin_version}"
-    id "com.github.sherter.google-java-format" version "${google_java_format_plugin_version}"
-    id "com.github.spotbugs" version "4.5.0" apply false
-    id "org.sonarqube" version "3.0" apply false
+    id 'java'
+    id 'jacoco'
+    id 'org.springframework.boot' version '2.7.2'
+    id 'io.spring.dependency-management' version '1.0.12.RELEASE'
+    id 'com.gorylenko.gradle-git-properties' version "2.4.1"
+    id 'com.google.cloud.tools.jib' version "3.2.1"
+    id 'com.diffplug.spotless' version "6.9.0"
 }
-apply plugin: "idea"
-apply from: "gradle/tests.gradle"
-apply from: "gradle/code-quality.gradle"
+def jacocoToolVersion = "0.8.8"
+def jacocoMinCoverageRequired = 0.30
+def googleJavaFormatToolVersion = "1.12.0"
 
 group = "com.sivalabs"
 version = "0.0.1-SNAPSHOT"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 configurations {
@@ -27,6 +27,18 @@ configurations {
 
 repositories {
     mavenCentral()
+}
+ext {
+    set('spring_cloud_version', "2021.0.3")
+    set('testcontainers_version', "1.17.3")
+    set('springdoc_openapi_version', "1.6.9")
+    set('jsoup_version', "1.15.2")
+    set('commons_lang_version', "3.12.0")
+    set('commons_io_version', "2.11.0")
+    set('opencsv_version', "5.6")
+    set('jjwt_version', "0.9.1")
+    set('problem_spring_web_version', "0.27.0")
+    set('archunit_version', "0.23.1")
 }
 
 dependencies {
@@ -52,18 +64,16 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok"
 
     implementation "org.springdoc:springdoc-openapi-ui:${springdoc_openapi_version}"
-
     implementation "com.opencsv:opencsv:${opencsv_version}"
     implementation "org.jsoup:jsoup:${jsoup_version}"
     implementation "org.apache.commons:commons-lang3:${commons_lang_version}"
     implementation "commons-io:commons-io:${commons_io_version}"
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test") {
-        exclude group: "org.junit.vintage", module: "junit-vintage-engine"
-    }
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.testcontainers:junit-jupiter"
     testImplementation "org.testcontainers:postgresql"
-    testImplementation "com.tngtech.archunit:archunit-junit5:${archunit_junit5_version}"
+    testImplementation "com.tngtech.archunit:archunit-junit5:${archunit_version}"
 }
 
 dependencyManagement {
@@ -73,32 +83,95 @@ dependencyManagement {
     }
 }
 
-springBoot {
-    buildInfo()
-}
-
-bootJar {
-    //launchScript()
-}
-//bootBuildInfo.mustRunAfter processResources
 bootBuildImage {
     imageName = "sivaprasadreddy/devzone-api-springboot"
 }
 
-compileJava.dependsOn processResources
-processResources.dependsOn bootBuildInfo
-
-bootRun {
-    args = ["--spring.profiles.active=local"]
-}
-
 gitProperties {
     failOnNoGitDirectory = false
-    keys = ["git.branch", "git.commit.id.abbrev", "git.commit.id.describe"]
+    keys = ["git.branch",
+            "git.commit.id.abbrev",
+            "git.commit.user.name",
+            "git.commit.message.full"
+    ]
 }
 
-googleJavaFormat {
-    options style: 'AOSP'
+jib {
+    from {
+        image = 'eclipse-temurin:17-jre-focal'
+    }
+    to {
+        image = 'sivaprasadreddy/devzone-api-springboot'
+        tags = ['latest']
+    }
+    container {
+        jvmFlags = ['-Xms512m', '-Xdebug']
+        mainClass = 'com.sivalabs.devzone.DevZoneApplication'
+        args = []
+        ports = ['8080/tcp']
+    }
 }
-verifyGoogleJavaFormat.dependsOn(tasks.googleJavaFormat)
-check.dependsOn verifyGoogleJavaFormat
+
+spotless {
+    java {
+        importOrder()
+        removeUnusedImports()
+        googleJavaFormat(googleJavaFormatToolVersion)
+            .aosp()
+            .reflowLongStrings()
+            .groupArtifact('com.google.googlejavaformat:google-java-format')
+
+    }
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events = ["PASSED", "FAILED", "SKIPPED"]
+        //showStandardStreams = true
+        exceptionFormat = "full"
+    }
+}
+
+jacoco {
+    toolVersion = jacocoToolVersion
+}
+
+def jacocoExcludes = [
+    'com/sivalabs/devzone/*Application.*',
+]
+
+jacocoTestReport {
+    executionData tasks.withType(Test)
+    classDirectories.from = files(sourceSets.main.output.classesDirs)
+    sourceDirectories.from = files(sourceSets.main.java.srcDirs)
+
+    afterEvaluate {
+        getClassDirectories().setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: jacocoExcludes)
+        }))
+    }
+
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+jacocoTestCoverageVerification {
+    dependsOn "test"
+    executionData fileTree(project.buildDir.absolutePath).include("jacoco/*.exec")
+
+    violationRules {
+        rule {
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = jacocoMinCoverageRequired
+            }
+            excludes = jacocoExcludes
+        }
+    }
+}
+
+check.dependsOn jacocoTestReport, jacocoTestCoverageVerification

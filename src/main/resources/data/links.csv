@@ -11,7 +11,7 @@ https://advancedweb.hu/2019/02/19/post_java_8/,"A categorized list of all Java a
 https://blog.jooq.org/2014/06/25/flyway-and-jooq-for-unbeatable-sql-development-productivity/,"Flyway and jOOQ for Unbeatable SQL Development Productivity",jooq|flyway
 https://reversecoding.net/spring-mvc-requestparam-binding-request-parameters/,"Spring MVC @Requestparam - Binding request parameters",java|spring-mvc
 https://www.marcobehler.com/guides/java-microservices-a-practical-guide,"Java Microservices: A Practical Guide",microservices|spring-boot
-https://github.com/gavlyukovskiy/spring-boot-data-source-decorator, "Spring Boot integration with p6spy, datasource-proxy, flexy-pool and spring-cloud-sleuth",spring-boot
+https://github.com/gavlyukovskiy/spring-boot-data-source-decorator,"Spring Boot integration with p6spy, datasource-proxy, flexy-pool and spring-cloud-sleuth",spring-boot
 https://www.sitepoint.com/javascript-command-line-interface-cli-node-js/,"Build a JavaScript Command Line Interface (CLI) with Node.js",nodejs
 https://medium.com/faun/continuous-integration-of-java-project-with-github-actions-7a8a0e8246ef,"Continuous Integration of Java project with GitHub Actions",java|github|ci-cd
 https://rachelcarmena.github.io/2018/12/12/how-to-teach-git.html,"How to teach Git",git
@@ -19,3 +19,89 @@ https://blog.noizwaves.io/2017/09/02/slow-spring-boot-startup.html,"Fixing Slow 
 https://rskupnik.github.io/framework-independence-with-hexagonal-architecture,"Achieving framework-independent zen with the power of interfaces and hexagonal architecture",architecture|spring
 https://www.baeldung.com/jackson-deserialize-immutable-objects,"Deserialize Immutable Objects with Jackson",java|jackson|json
 https://sivalabs.in/2020/02/spring-boot-integration-testing-using-testcontainers-starter/,"SpringBoot Integration Testing using TestContainers Starter",spring-boot|testcontainers
+https://dzone.com//articles/listening-to-events-with-gservlet,"Handling Events With GServlet",java
+https://dzone.com//articles/rabbitmq-installation-rabbitmq-tutorial-rabbitmq-t,"RabbitMQ Installation | RabbitMQ Tutorial: Java, Java Spring [Video]",rabbitmq
+https://dzone.com//articles/how-to-download-and-install-apache-activemq-on-win,"Download and Install Apache ActiveMQ on Windows | ActiveMQ Tutorial [Video]",activemq
+https://dzone.com//articles/architecting-and-delivering-java,"Architecting and delivering Java Applications in the Cloud Era",java
+https://dzone.com//articles/top-10-games-running-on-javascript-amp-html5,"Top 10 Games Running on Javascript and HTML5",java
+https://dzone.com//articles/how-to-create-a-web-based-viewer-in-java,"How to Create a Web-Based Viewer in Java",api
+https://dzone.com//articles/how-to-sendreceive-a-product-object-tofrom-the-que,"How to Send/Receive a Product Object To/From the Queue (Spring Boot + JMS +...",jms
+https://dzone.com//articles/how-to-sendreceive-a-message-tofrom-the-queue-spri,"How to Send/Receive a Message To/From the Queue (Spring Boot + JMS +...",jms
+https://dzone.com//articles/multithreading-java-and-interviews-part-2-wait-and,"Multithreading Java and Interviews Part 3: Wait and Notify All",java
+https://dzone.com//articles/chaos-engineering-simulating-outofmemoryerror,"Chaos Engineering: Simulating OutOfMemoryError",java
+https://dzone.com//articles/java-coding-style-or-bad-practice,"Java: Coding Style or Bad Practice?",java
+https://dzone.com//articles/top-java-collection-interview-questions-for-2021,"Top Java Collection Interview Questions for 2021",java
+https://dzone.com//articles/implementing-user-sign-up-in-vaadin-flow,"Implementing User Sign Up in Vaadin Flow Applications (Simple)",java
+https://dzone.com//articles/how-to-convert-double-to-int-in-java,"How To Convert double To int In Java?",java
+https://dzone.com//articles/spring-boot-jmstemplate-with-embedded-activemq-spr-1,"Spring Boot JMSTemplate With Embedded ActiveMQ [Video]",spring-boot
+https://dzone.com//articles/java-concurrency-understanding-the-volatile-keyword,"Java Concurrency: Understanding the ‘Volatile’ Keyword",java
+https://dzone.com//articles/an-overview-of-google-guava-and-introduction-to-it,"Google Guava and Its Two Fantastic Libraries: Graph and Eventbus",java
+https://dzone.com//articles/cassandra-udt,"Apache Cassandra With Java: Introduction to UDT",java
+https://dzone.com//articles/3-principles-for-java-engineers-to-apply-in-their-1,"3 Principles for Java Engineers to Stay Up-to-date With Technology",java
+https://dzone.com//articles/spring-boot-jms-activemq-example,"Spring Boot JMS ActiveMQ Example [Video]",spring-boot
+https://dzone.com//articles/gradle-goodness-enabling-preview-features-for-java,"Gradle Goodness: Enabling Preview Features For Java",java
+https://dzone.com//articles/using-microprofile-to-build-a-secure-graphql-api,"Using MicroProfile to Build a Secure GraphQL API",spring-boot
+https://dzone.com//articles/monitoring-across-frameworks,"Monitoring Across Frameworks",java
+https://dzone.com//articles/deadlock-free-synchronization-in-java,"Deadlock-Free Synchronization in Java",java
+https://dzone.com//articles/re-thinking-the-visitor-pattern-with-scala-shapele,"Re-Thinking the Visitor Pattern With Scala: Shapeless and Polymorphic...",scala
+https://dzone.com//articles/implementing-authentication-and-authorization-with-vaadin,"Implementing Authentication and Authorization With Vaadin",vaadin
+https://dzone.com//articles/running-hazelcast-using-hazelcast-command-line,"Running Hazelcast Using Hazelcast Command Line",java
+https://dzone.com//articles/multithreading-java-and-interviewspart-2,"Multithreading Java and Interviews Part 2: Mutex, the Java Monitor Model",java
+https://dzone.com//articles/migrating-cobol-batch-to-spring-batch,"Migrating COBOL Batch to Spring Batch",spring-batch
+https://dzone.com//articles/how-to-sendreceive-product-object-tofrom-queuespri-2,"How to Send/Receive a Product Object to/from a Queue [Video]",jms
+https://dzone.com//articles/java_multi_interview_1,"Multithreading Java and Interviews Part 1: An Introduction",java
+https://dzone.com//articles/how-to-receive-messages-from-queue-asynchronously,"Receive Messages from Queue Asynchronously Using MessageListener | ActiveMQ...",jms
+https://dzone.com//articles/how-to-sendreceive-text-message-tofrom-queuespring-3,"How to Send/Receive Text Messages to/from a Queue (Spring + JMS + RabbitMQ...",jms
+https://dzone.com//articles/how-to-perform-lead-enrichment-in-java,"How to Perform Lead Enrichment in Java",api
+https://dzone.com//articles/creating-filters-and-listeners-with-gservlet,"Creating Filters With GServlet",groovy
+https://dzone.com//articles/an-introduction-to-interference-implement-a-distri,"Implement a Distributed Database to Your Java Application",java
+https://dzone.com//articles/http-grpc-with-spring-web,"HTTP gRPC With spring-web",grpc
+https://dzone.com//articles/java-joy-merge-maps-using-stream-api,"Java Joy: Merge Maps Using Stream API",java
+https://dzone.com//articles/uploading-files-in-spring-boot-apps,"Uploading Files in Spring Boot Apps",java
+https://dzone.com//articles/using-quarkus-for-building-reactive-applications,"Using Quarkus for Building Reactive Applications",quarkus
+https://dzone.com//articles/how-to-use-spring-boot-and-jhipster-with-reactive,"How to Use Spring Boot and JHipster With Reactive Java Microservices",spring-webflux
+https://dzone.com//articles/how-to-get-attribute-value-in-selenium-webdriver,"How To Get Attribute Value In Selenium WebDriver",selenium
+https://dzone.com//articles/using-hamcrest-and-vali4j-with-dbc-techniques-to-t,"Using Hamcrest and valid4j With DBC Techniques To Throw Recoverable...",java
+https://dzone.com//articles/working-with-spring-boot-and-hazelcastdistributed,"Working With Spring Boot and Hazelcast (Distributed Cache)",hazelcast
+https://dzone.com//articles/mxreflection-java-math-framework,"MXReflection: A Java Math Framework",java
+https://dzone.com//articles/java-threads-may-not-be-memory-efficient,"Java Threads: Are They Memory Efficient?",java
+https://dzone.com//articles/deploy-friday-e43,"Deploy Friday: E43 Move Your Java Microservices to the Cloud With Payara",java
+https://dzone.com//articles/java-unit-testing-private-methods,"Java: Unit Testing Private Methods",java
+https://dzone.com//articles/junit-and-tdd-for-testing,"JUnit and TDD for Testing",java
+https://dzone.com//articles/java-joy-composing-functions,"Java Joy: Composing Functions",java
+https://dzone.com//articles/json-values,"The Value of JSON Values",java
+https://dzone.com//articles/avoid-method-chaining-when-using-multiple-autoclos,"Avoid Method Chaining When Using Multiple AutoCloseable Instances",java
+https://dzone.com//articles/java-memory-management,"Java Memory Management",java
+https://dzone.com//articles/event-notifier-apache-camel,"Event Notifier in Apache Camel Route",apache-camel
+https://dzone.com//articles/spell-autocorrect-with-edit-distance-and-trie,"Spell Autocorrect With Edit Distance and Trie",java
+https://dzone.com//articles/distribution-of-jvm-desktop-applications,"Distribution of JVM Desktop Applications",java
+https://dzone.com//articles/java-gitops,"Accelerating the Delivery of Your Project in the Cloud in an Easy and...",cloud
+https://dzone.com//articles/spring-boot-on-quarkus-magic-or-madness,"Spring Boot on Quarkus: Magic or Madness?",quarkus
+https://dzone.com//articles/preventing-xxe-in-java-applications,"Preventing XXE in Java Applications",java
+https://dzone.com//articles/skaffolding-springboot-application,"CI/CD Workflow for Spring Boot Application on Kubernetes via Skaffold",devops
+https://dzone.com//articles/enhancing-the-development-loop-with-quarkus-remote,"Enhancing the Development Loop With Quarkus Remote Development",java
+https://dzone.com//articles/deploy-friday-e42,"Deploy Friday: E42 Subatomic Reactive Systems in cloud",java
+https://dzone.com//articles/transactional-effect-in-scala,"Transactional Effects in Scala",scala
+https://dzone.com//articles/stranger-things-in-java-constants,"Stranger Things in Java: Constants",java
+https://dzone.com//articles/declare-var-not-war,"Local Variable Type Inference: Declare Var, Not War",java
+https://dzone.com//articles/crud-rest-service-with-spring-boot-hibernate-and-j,"Build a RESTful CRUD Service With Spring Boot, Hibernate, and JPA",spring-boot
+https://dzone.com//articles/enable-spring-boot-applicationstartup-metrics-to-d,"Enable Spring Boot ApplicationStartup Metrics to Diagnose Slow Startup",spring-boot
+https://dzone.com//articles/clojure-goodness-destructure-sequences,"Clojure Goodness: Destructure Sequences",clojure
+https://dzone.com//articles/going-beyond-java-8-compact-strings,"Going Beyond Java 8: Compact Strings",java
+https://dzone.com//articles/write-a-quarkus-function-in-two-steps-on-red-hat-o,"Write a Quarkus Function in Two Steps on Red Hat OpenShift Serverless",quarkus
+https://dzone.com//articles/deploy-friday-e41-empowering-business-automation-w,"Deploy Friday: E41 Empowering business automation with Quarkus",quarkus
+https://dzone.com//articles/scaling-secure-applications-with-spring-session-an,"Scaling Secure Applications With Spring Session and Redis",spring
+https://dzone.com//articles/java-code-quality-tools-recommended-by-developers,"Java Code Quality Tools Recommended by Developers",java
+https://dzone.com//articles/customizing-cors-filtering-at-runtime,"Customizing CORS Filtering at Runtime",java
+https://dzone.com//articles/diving-into-scala-cats-functors,"Diving into Scala Cats – Functors",scala
+https://dzone.com//articles/diving-into-scala-cats-monoids,"Diving into Scala Cats – Monoids",scala
+https://dzone.com//articles/diving-into-scala-cats-semigroups,"Diving into Scala Cats – Semigroups",scala
+https://dzone.com//articles/getting-started-with-scala-cats-1,"Getting Started with Scala Cats",scala
+https://dzone.com//articles/spring-boot-boost-jpa-bulk-insert-performance-by-100x,"Spring Boot: Boost JPA Bulk Insert Performance by 100x",spring-boot
+https://dzone.com//articles/supersonic-subatomic-grpc-services-with-java-and-q,"Supersonic, Subatomic gRPC Services With Java and Quarkus",quarkus
+https://dzone.com//articles/jpa-goes-even-easier-with-its-buddy,"JPA Goes Even Easier With its Buddy",java
+https://dzone.com//articles/mock-java-datetime-for-testing,"Mock Java Date/Time for Testing",java
+https://dzone.com//articles/logical-separation-hexagonal,"Logical Separation in the Hexagonal Architecture",software-architecture
+https://dzone.com//articles/4-things-cloud-native-java-must-provide,"4 Things Cloud-Native Java Must Provide",java
+https://dzone.com//articles/clustered-quartz-scheduler-with-spring-boot-and-mo,"Clustered Quartz Scheduler With Spring Boot and MongoDB",quartz
+https://dzone.com//articles/garbage-collection-in-javajvm,"Garbage Collection in Java (JVM)",java

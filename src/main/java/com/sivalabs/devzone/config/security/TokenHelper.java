@@ -1,5 +1,6 @@
 package com.sivalabs.devzone.config.security;
 
+import com.sivalabs.devzone.common.exceptions.DevZoneException;
 import com.sivalabs.devzone.config.ApplicationProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -20,19 +21,6 @@ public class TokenHelper {
 
     private final ApplicationProperties applicationProperties;
 
-    public String getToken(HttpServletRequest request) {
-        String authHeader = request.getHeader(applicationProperties.getJwt().getHeader());
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            return authHeader.substring(7);
-        }
-        return null;
-    }
-
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = getUsernameFromToken(token);
-        return username != null && username.equals(userDetails.getUsername());
-    }
-
     public String getUsernameFromToken(String token) {
         String username = null;
         try {
@@ -42,6 +30,25 @@ public class TokenHelper {
             log.error(e.getMessage(), e);
         }
         return username;
+    }
+
+    public String refreshToken(String token) {
+        String refreshedToken = null;
+        Date a = new Date();
+        try {
+            final Claims claims = this.getAllClaimsFromToken(token);
+            claims.setIssuedAt(a);
+            refreshedToken =
+                    Jwts.builder()
+                            .setClaims(claims)
+                            .setExpiration(generateExpirationDate())
+                            .signWith(
+                                    SIGNATURE_ALGORITHM, applicationProperties.getJwt().getSecret())
+                            .compact();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return refreshedToken;
     }
 
     public String generateToken(String username) {
@@ -64,7 +71,7 @@ public class TokenHelper {
                             .parseClaimsJws(token)
                             .getBody();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new DevZoneException(e);
         }
         return claims;
     }
@@ -72,5 +79,26 @@ public class TokenHelper {
     private Date generateExpirationDate() {
         return new Date(
                 System.currentTimeMillis() + applicationProperties.getJwt().getExpiresIn() * 1000);
+    }
+
+    public long getExpiredIn() {
+        return applicationProperties.getJwt().getExpiresIn();
+    }
+
+    public Boolean validateToken(String token, UserDetails userDetails) {
+        final String username = getUsernameFromToken(token);
+        return username != null && username.equals(userDetails.getUsername());
+    }
+
+    public String getToken(HttpServletRequest request) {
+        String authHeader = getAuthHeaderFromHeader(request);
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
+        }
+        return null;
+    }
+
+    public String getAuthHeaderFromHeader(HttpServletRequest request) {
+        return request.getHeader(applicationProperties.getJwt().getHeader());
     }
 }
