@@ -27,7 +27,7 @@ public class GlobalExceptionHandler implements ProblemHandling, SecurityAdviceTr
     }
 
     @ExceptionHandler(DevZoneException.class)
-    ResponseEntity<Problem> handleGeeksClubException(
+    ResponseEntity<Problem> handleDevZoneException(
             DevZoneException exception, NativeWebRequest request) {
         log.error(exception.getLocalizedMessage(), exception);
         return create(Status.BAD_REQUEST, exception, request);
