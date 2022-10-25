@@ -2,6 +2,7 @@ package com.sivalabs.devzone.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 @ConfigurationProperties(prefix = "devzone")
 @Data
@@ -9,7 +10,7 @@ public class ApplicationProperties {
     private boolean importDataEnabled = true;
     private String importFilePath;
 
-    private JwtConfig jwt = new JwtConfig();
+    @NestedConfigurationProperty private JwtConfig jwt = new JwtConfig();
 
     @Data
     public static class JwtConfig {

@@ -5,6 +5,7 @@ target/
 !**/src/test/**
 .gradle/
 build/
+bin/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
