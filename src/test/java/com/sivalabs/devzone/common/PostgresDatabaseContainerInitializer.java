@@ -7,12 +7,11 @@ import org.testcontainers.containers.PostgreSQLContainer;
 
 public class PostgresDatabaseContainerInitializer
         implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-    private static final PostgreSQLContainer<?> sqlContainer =
-            new PostgreSQLContainer<>("postgres:14-alpine")
-                    .withDatabaseName("integration-tests-db")
-                    .withUsername("sa")
-                    .withPassword("sa")
-                    .withReuse(true);
+    private static final PostgreSQLContainer<?> sqlContainer = new PostgreSQLContainer<>("postgres:15.3-alpine")
+            .withDatabaseName("integration-tests-db")
+            .withUsername("sa")
+            .withPassword("sa")
+            .withReuse(true);
 
     static {
         sqlContainer.start();

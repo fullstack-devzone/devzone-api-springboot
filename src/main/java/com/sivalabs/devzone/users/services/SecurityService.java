@@ -20,8 +20,7 @@ public class SecurityService {
 
     public User loginUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null
-                && authentication.getPrincipal() instanceof SecurityUser securityUser) {
+        if (authentication != null && authentication.getPrincipal() instanceof SecurityUser securityUser) {
             return securityUser.getUser();
         } else if (authentication instanceof UsernamePasswordAuthenticationToken) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();

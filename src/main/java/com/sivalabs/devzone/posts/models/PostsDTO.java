@@ -1,4 +1,4 @@
-package com.sivalabs.devzone.links.models;
+package com.sivalabs.devzone.posts.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
@@ -12,8 +12,8 @@ import org.springframework.data.domain.Page;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LinksDTO {
-    private List<LinkDTO> data;
+public class PostsDTO {
+    private List<PostDTO> data;
     private long totalElements;
     private int pageNumber;
     private int totalPages;
@@ -30,14 +30,14 @@ public class LinksDTO {
     @JsonProperty("hasPrevious")
     private boolean hasPrevious;
 
-    public LinksDTO(Page<LinkDTO> linksPage) {
-        this.setData(linksPage.getContent());
-        this.setTotalElements(linksPage.getTotalElements());
-        this.setPageNumber(linksPage.getNumber() + 1); // 1 - based page numbering
-        this.setTotalPages(linksPage.getTotalPages());
-        this.setFirst(linksPage.isFirst());
-        this.setLast(linksPage.isLast());
-        this.setHasNext(linksPage.hasNext());
-        this.setHasPrevious(linksPage.hasPrevious());
+    public PostsDTO(Page<PostDTO> postsPage) {
+        this.setData(postsPage.getContent());
+        this.setTotalElements(postsPage.getTotalElements());
+        this.setPageNumber(postsPage.getNumber() + 1); // 1 - based page numbering
+        this.setTotalPages(postsPage.getTotalPages());
+        this.setFirst(postsPage.isFirst());
+        this.setLast(postsPage.isLast());
+        this.setHasNext(postsPage.hasNext());
+        this.setHasPrevious(postsPage.hasPrevious());
     }
 }

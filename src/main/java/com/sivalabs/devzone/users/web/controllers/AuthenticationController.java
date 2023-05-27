@@ -10,8 +10,8 @@ import com.sivalabs.devzone.users.models.AuthenticationRequest;
 import com.sivalabs.devzone.users.models.AuthenticationResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final AuthenticationManager authenticationManager;
@@ -37,10 +37,8 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> createAuthenticationToken(
             @RequestBody AuthenticationRequest credentials) {
         try {
-            Authentication authentication =
-                    authenticationManager.authenticate(
-                            new UsernamePasswordAuthenticationToken(
-                                    credentials.getUsername(), credentials.getPassword()));
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(credentials.getUsername(), credentials.getPassword()));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -55,8 +53,7 @@ public class AuthenticationController {
     @PostMapping("/refresh")
     @AnyAuthenticatedUser
     @Operation(summary = "Refresh Auth Token", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<AuthenticationResponse> refreshAuthenticationToken(
-            HttpServletRequest request) {
+    public ResponseEntity<AuthenticationResponse> refreshAuthenticationToken(HttpServletRequest request) {
         String authToken = tokenHelper.getToken(request);
         if (authToken != null) {
             String email = tokenHelper.getUsernameFromToken(authToken);
@@ -72,16 +69,14 @@ public class AuthenticationController {
 
     private AuthenticationResponse getAuthenticationResponse(SecurityUser user, String token) {
         return AuthenticationResponse.builder()
-                .user(
-                        AuthUserDTO.builder()
-                                .name(user.getUser().getName())
-                                .email(user.getUser().getEmail())
-                                .role(user.getUser().getRole())
-                                .build())
+                .user(AuthUserDTO.builder()
+                        .name(user.getUser().getName())
+                        .email(user.getUser().getEmail())
+                        .role(user.getUser().getRole())
+                        .build())
                 .accessToken(token)
-                .expiresAt(
-                        LocalDateTime.now()
-                                .plusSeconds(applicationProperties.getJwt().getExpiresIn()))
+                .expiresAt(LocalDateTime.now()
+                        .plusSeconds(applicationProperties.getJwt().getExpiresIn()))
                 .build();
     }
 }

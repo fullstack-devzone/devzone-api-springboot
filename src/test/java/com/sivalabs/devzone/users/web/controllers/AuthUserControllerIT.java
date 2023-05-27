@@ -12,11 +12,11 @@ class AuthUserControllerIT extends AbstractIntegrationTest {
     @Test
     @WithMockUser("siva@gmail.com")
     void should_get_login_user_details() throws Exception {
-        this.mockMvc.perform(get("/api/auth/me")).andExpect(status().isOk());
+        this.mockMvc.perform(get("/api/me")).andExpect(status().isOk());
     }
 
     @Test
     void should_fail_to_get_login_user_details_if_unauthorized() throws Exception {
-        this.mockMvc.perform(get("/api/auth/me")).andExpect(status().isForbidden());
+        this.mockMvc.perform(get("/api/me")).andExpect(status().isForbidden());
     }
 }

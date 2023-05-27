@@ -18,9 +18,6 @@ public class SecurityUserDetailsService implements UserDetailsService {
         return userService
                 .getUserByEmail(username)
                 .map(SecurityUser::new)
-                .orElseThrow(
-                        () ->
-                                new UsernameNotFoundException(
-                                        "No user found with username " + username));
+                .orElseThrow(() -> new UsernameNotFoundException("No user found with username " + username));
     }
 }

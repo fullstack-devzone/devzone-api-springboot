@@ -1,6 +1,6 @@
 package com.sivalabs.devzone.users.services;
 
-import com.sivalabs.devzone.common.exceptions.DevZoneException;
+import com.sivalabs.devzone.common.exceptions.BadRequestException;
 import com.sivalabs.devzone.users.entities.RoleEnum;
 import com.sivalabs.devzone.users.entities.User;
 import com.sivalabs.devzone.users.models.UserDTO;
@@ -32,7 +32,7 @@ public class UserService {
 
     public UserDTO createUser(UserDTO user) {
         if (userRepository.existsByEmail(user.getEmail())) {
-            throw new DevZoneException("Email " + user.getEmail() + " is already in use");
+            throw new BadRequestException("Email " + user.getEmail() + " is already in use");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User userEntity = user.toEntity();

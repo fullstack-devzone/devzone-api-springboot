@@ -1,12 +1,11 @@
-package com.sivalabs.devzone.config;
+package com.sivalabs.devzone.posts;
 
-import com.sivalabs.devzone.links.services.LinkService;
-import com.sivalabs.devzone.links.services.LinksImportService;
-import java.util.Locale;
+import com.sivalabs.devzone.config.ApplicationProperties;
+import com.sivalabs.devzone.posts.services.PostService;
+import com.sivalabs.devzone.posts.services.PostsImportService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,19 +15,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class DataInitializer implements CommandLineRunner {
     private final ApplicationProperties applicationProperties;
-    private final LinkService linkService;
-    private final LinksImportService linksImportService;
-    private final MessageSource messageSource;
+    private final PostService postService;
+    private final PostsImportService postsImportService;
 
     @Override
     public void run(String... args) throws Exception {
-        log.info(
-                messageSource.getMessage(
-                        "startup-message", null, "Welcome to DevZone!!!", Locale.getDefault()));
         if (applicationProperties.isImportDataEnabled()) {
-            linkService.deleteAllLinks();
+            postService.deleteAllPosts();
             String fileName = applicationProperties.getImportFilePath();
-            linksImportService.importLinks(fileName);
+            postsImportService.importPosts(fileName);
         } else {
             log.info("Data importing is disabled");
         }

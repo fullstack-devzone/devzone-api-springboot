@@ -1,20 +1,20 @@
-package com.sivalabs.devzone.links.models;
+package com.sivalabs.devzone.posts.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import javax.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class LinkDTO {
+public class PostDTO {
     private Long id;
 
     @NotBlank(message = "URL cannot be blank")
     private String url;
 
     private String title;
+
+    private String content;
 
     @JsonProperty("created_user_id")
     private Long createdUserId;
@@ -27,6 +27,4 @@ public class LinkDTO {
 
     @JsonProperty("updated_at")
     private Instant updatedAt;
-
-    private List<String> tags = new ArrayList<>();
 }

@@ -17,7 +17,9 @@ import org.springframework.test.web.servlet.MockMvc;
 @ContextConfiguration(initializers = {PostgresDatabaseContainerInitializer.class})
 public abstract class AbstractIntegrationTest extends TestContainersInitializer {
 
-    @Autowired protected MockMvc mockMvc;
+    @Autowired
+    protected MockMvc mockMvc;
 
-    @Autowired protected ObjectMapper objectMapper;
+    @Autowired
+    protected ObjectMapper objectMapper;
 }

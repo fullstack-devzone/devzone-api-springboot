@@ -1,42 +1,46 @@
 package com.sivalabs.devzone.config.advice;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+
 import com.sivalabs.devzone.common.exceptions.BadRequestException;
 import com.sivalabs.devzone.common.exceptions.DevZoneException;
 import com.sivalabs.devzone.common.exceptions.ResourceNotFoundException;
+import java.net.URI;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.NativeWebRequest;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
-import org.zalando.problem.spring.web.advice.ProblemHandling;
-import org.zalando.problem.spring.web.advice.security.SecurityAdviceTrait;
-
-// See Bug: https://github.com/zalando/problem-spring-web/issues/707
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @Slf4j
 @RestControllerAdvice
-public class GlobalExceptionHandler implements ProblemHandling, SecurityAdviceTrait {
+class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    ResponseEntity<Problem> handleResourceNotFoundException(
-            ResourceNotFoundException exception, NativeWebRequest request) {
-        log.error(exception.getLocalizedMessage(), exception);
-        return create(Status.NOT_FOUND, exception, request);
+    ProblemDetail handleResourceNotFoundException(ResourceNotFoundException e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(NOT_FOUND, e.getMessage());
+        problemDetail.setTitle("Resource Not Found");
+        problemDetail.setType(URI.create("https://api.devzone.com/errors/not-found"));
+        return problemDetail;
     }
 
     @ExceptionHandler(DevZoneException.class)
-    ResponseEntity<Problem> handleDevZoneException(
-            DevZoneException exception, NativeWebRequest request) {
-        log.error(exception.getLocalizedMessage(), exception);
-        return create(Status.BAD_REQUEST, exception, request);
+    ProblemDetail handleDevZoneException(DevZoneException e) {
+        log.error(e.getLocalizedMessage(), e);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(INTERNAL_SERVER_ERROR, e.getMessage());
+        problemDetail.setTitle("Unknown Problem");
+        problemDetail.setType(URI.create("https://api.devzone.com/errors/unknown"));
+        return problemDetail;
     }
 
     @ExceptionHandler(BadRequestException.class)
-    ResponseEntity<Problem> handleBadRequestException(
-            BadRequestException exception, NativeWebRequest request) {
-        log.error(exception.getLocalizedMessage(), exception);
-        return create(Status.BAD_REQUEST, exception, request);
+    ProblemDetail handleBadRequestException(BadRequestException e) {
+        log.error(e.getLocalizedMessage(), e);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(BAD_REQUEST, e.getMessage());
+        problemDetail.setTitle("Unknown Problem");
+        problemDetail.setType(URI.create("https://api.devzone.com/errors/badrequest"));
+        return problemDetail;
     }
 }

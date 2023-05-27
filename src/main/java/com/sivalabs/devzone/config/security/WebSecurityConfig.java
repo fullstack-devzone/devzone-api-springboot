@@ -1,66 +1,50 @@
 package com.sivalabs.devzone.config.security;
 
+import com.sivalabs.devzone.users.entities.RoleEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 
 @Configuration
-@Import(SecurityProblemSupport.class)
+@EnableMethodSecurity
 @RequiredArgsConstructor
 @Slf4j
 public class WebSecurityConfig {
-    private final AuthenticationManager authenticationManager;
     private final TokenAuthenticationFilter tokenAuthenticationFilter;
-    private final RoleHierarchy roleHierarchy;
-    private final SecurityProblemSupport problemSupport;
+
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+        roleHierarchy.setHierarchy(RoleEnum.getRoleHierarchy());
+        log.debug("RoleHierarchy: {}", RoleEnum.getRoleHierarchy());
+        return roleHierarchy;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable();
+        http.csrf(CsrfConfigurer::disable);
+        http.cors(CorsConfigurer::disable);
 
-        http.cors().disable();
+        http.authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/actuator/**", "/api/auth/**")
+                .permitAll()
+                .anyRequest()
+                .permitAll());
 
-        http.authorizeRequests()
-                .expressionHandler(webExpressionHandler(roleHierarchy))
-                .antMatchers("/actuator/**", "/api/auth/**")
-                .permitAll();
-
-        http.authenticationManager(authenticationManager);
-
-        http.exceptionHandling()
-                .authenticationEntryPoint(problemSupport)
-                .accessDeniedHandler(problemSupport);
-
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.addFilterBefore(tokenAuthenticationFilter, BasicAuthenticationFilter.class);
 
         return http.build();
-    }
-
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().antMatchers("/webjars/**", "/static/**");
-    }
-
-    private SecurityExpressionHandler<FilterInvocation> webExpressionHandler(
-            RoleHierarchy roleHierarchy) {
-        DefaultWebSecurityExpressionHandler defaultWebSecurityExpressionHandler =
-                new DefaultWebSecurityExpressionHandler();
-        defaultWebSecurityExpressionHandler.setRoleHierarchy(roleHierarchy);
-        return defaultWebSecurityExpressionHandler;
     }
 }

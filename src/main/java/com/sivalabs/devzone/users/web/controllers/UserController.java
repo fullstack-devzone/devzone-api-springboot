@@ -5,7 +5,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import com.sivalabs.devzone.users.models.CreateUserRequest;
 import com.sivalabs.devzone.users.models.UserDTO;
 import com.sivalabs.devzone.users.services.UserService;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -27,17 +27,12 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping("")
+    @PostMapping
     @ResponseStatus(CREATED)
     public UserDTO createUser(@RequestBody @Valid CreateUserRequest createUserRequest) {
         log.info("process=create_user, user_email={}", createUserRequest.getEmail());
-        UserDTO userDTO =
-                new UserDTO(
-                        null,
-                        createUserRequest.getName(),
-                        createUserRequest.getEmail(),
-                        createUserRequest.getPassword(),
-                        null);
+        UserDTO userDTO = new UserDTO(
+                null, createUserRequest.getName(), createUserRequest.getEmail(), createUserRequest.getPassword(), null);
         return userService.createUser(userDTO);
     }
 }

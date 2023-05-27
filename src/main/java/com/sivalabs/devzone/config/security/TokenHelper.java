@@ -5,8 +5,8 @@ import com.sivalabs.devzone.config.ApplicationProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
-import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Slf4j
 public class TokenHelper {
-    private static final SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512;
+    private static final SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS256;
     private static final String AUDIENCE_WEB = "web";
 
     private final ApplicationProperties applicationProperties;
@@ -38,13 +38,12 @@ public class TokenHelper {
         try {
             final Claims claims = this.getAllClaimsFromToken(token);
             claims.setIssuedAt(a);
-            refreshedToken =
-                    Jwts.builder()
-                            .setClaims(claims)
-                            .setExpiration(generateExpirationDate())
-                            .signWith(
-                                    SIGNATURE_ALGORITHM, applicationProperties.getJwt().getSecret())
-                            .compact();
+            refreshedToken = Jwts.builder()
+                    .setClaims(claims)
+                    .setExpiration(generateExpirationDate())
+                    .signWith(
+                            SIGNATURE_ALGORITHM, applicationProperties.getJwt().getSecret())
+                    .compact();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -65,11 +64,10 @@ public class TokenHelper {
     private Claims getAllClaimsFromToken(String token) {
         Claims claims;
         try {
-            claims =
-                    Jwts.parser()
-                            .setSigningKey(applicationProperties.getJwt().getSecret())
-                            .parseClaimsJws(token)
-                            .getBody();
+            claims = Jwts.parser()
+                    .setSigningKey(applicationProperties.getJwt().getSecret())
+                    .parseClaimsJws(token)
+                    .getBody();
         } catch (Exception e) {
             throw new DevZoneException(e);
         }

@@ -1,4 +1,4 @@
-package com.sivalabs.devzone.links.web.controllers;
+package com.sivalabs.devzone.posts.web.controllers;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.*;
@@ -9,8 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.opencsv.exceptions.CsvValidationException;
 import com.sivalabs.devzone.common.AbstractIntegrationTest;
-import com.sivalabs.devzone.links.services.LinkService;
-import com.sivalabs.devzone.links.services.LinksImportService;
+import com.sivalabs.devzone.posts.services.PostService;
+import com.sivalabs.devzone.posts.services.PostsImportService;
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,25 +20,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 
-class LinkControllerIT extends AbstractIntegrationTest {
+class PostControllerIT extends AbstractIntegrationTest {
 
-    @Autowired LinkService linkService;
+    @Autowired
+    PostService postService;
 
-    @Autowired LinksImportService linksImportService;
+    @Autowired
+    PostsImportService postsImportService;
 
     @BeforeEach
     void setUp() throws CsvValidationException, IOException {
-        linkService.deleteAllLinks();
-        linksImportService.importLinks("/data/test-links.csv");
+        postService.deleteAllPosts();
+        postsImportService.importPosts("/data/test-posts.csv");
     }
 
     @ParameterizedTest
-    @CsvSource({
-        "1,25,3,1,true,false,true,false",
-        "2,25,3,2,false,false,true,true",
-        "3,25,3,3,false,true,false,true"
-    })
-    void shouldFetchLinksByPageNumber(
+    @CsvSource({"1,25,3,1,true,false,true,false", "2,25,3,2,false,false,true,true", "3,25,3,3,false,true,false,true"})
+    void shouldFetchPostsByPageNumber(
             int pageNo,
             int totalElements,
             int totalPages,
@@ -49,32 +47,7 @@ class LinkControllerIT extends AbstractIntegrationTest {
             boolean hasPrevious)
             throws Exception {
         this.mockMvc
-                .perform(get("/api/links?page=" + pageNo))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalElements", equalTo(totalElements)))
-                .andExpect(jsonPath("$.totalPages", equalTo(totalPages)))
-                .andExpect(jsonPath("$.pageNumber", equalTo(pageNumber)))
-                .andExpect(jsonPath("$.isFirst", equalTo(isFirst)))
-                .andExpect(jsonPath("$.isLast", equalTo(isLast)))
-                .andExpect(jsonPath("$.hasNext", equalTo(hasNext)))
-                .andExpect(jsonPath("$.hasPrevious", equalTo(hasPrevious)));
-    }
-
-    @ParameterizedTest
-    @CsvSource({"spring-boot,1,8,1,1,true,true,false,false"})
-    void shouldFetchLinksByTag(
-            String tag,
-            int pageNo,
-            int totalElements,
-            int totalPages,
-            int pageNumber,
-            boolean isFirst,
-            boolean isLast,
-            boolean hasNext,
-            boolean hasPrevious)
-            throws Exception {
-        this.mockMvc
-                .perform(get("/api/links?tag={tag}&page={page}", tag, pageNo))
+                .perform(get("/api/posts?page=" + pageNo))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalElements", equalTo(totalElements)))
                 .andExpect(jsonPath("$.totalPages", equalTo(totalPages)))
@@ -87,7 +60,7 @@ class LinkControllerIT extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @CsvSource({"spring,1,9,1,1,true,true,false,false"})
-    void shouldSearchLinks(
+    void shouldSearchPosts(
             String query,
             int pageNo,
             int totalElements,
@@ -99,7 +72,7 @@ class LinkControllerIT extends AbstractIntegrationTest {
             boolean hasPrevious)
             throws Exception {
         this.mockMvc
-                .perform(get("/api/links?query={query}&page={page}", query, pageNo))
+                .perform(get("/api/posts?query={query}&page={page}", query, pageNo))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalElements", equalTo(totalElements)))
                 .andExpect(jsonPath("$.totalPages", equalTo(totalPages)))
@@ -112,17 +85,17 @@ class LinkControllerIT extends AbstractIntegrationTest {
 
     @Test
     @WithMockUser(username = "admin@gmail.com")
-    void shouldCreateLinkSuccessfully() throws Exception {
+    void shouldCreatePostSuccessfully() throws Exception {
         this.mockMvc
                 .perform(
-                        post("/api/links")
+                        post("/api/posts")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(
                                         """
                         {
                             "title": "SivaLabs Blog",
                             "url": "https://sivalabs.in",
-                            "tags": ["java", "spring-boot"]
+                            "content": "java blog"
                         }
                         """))
                 .andExpect(status().isCreated())
@@ -133,29 +106,10 @@ class LinkControllerIT extends AbstractIntegrationTest {
 
     @Test
     @WithMockUser(username = "admin@gmail.com")
-    void shouldCreateLinkSuccessfully_WithTitle() throws Exception {
+    void shouldFailToCreatePostWhenUrlIsNotPresent() throws Exception {
         this.mockMvc
                 .perform(
-                        post("/api/links")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(
-                                        """
-                        {
-                            "url": "https://sivalabs.in"
-                        }
-                        """))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id", notNullValue()))
-                .andExpect(jsonPath("$.title", is("SivaLabs - My Experiments with Technology")))
-                .andExpect(jsonPath("$.url", is("https://sivalabs.in")));
-    }
-
-    @Test
-    @WithMockUser(username = "admin@gmail.com")
-    void shouldFailToCreateLinkWhenUrlIsNotPresent() throws Exception {
-        this.mockMvc
-                .perform(
-                        post("/api/links")
+                        post("/api/posts")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(
                                         """
@@ -164,16 +118,6 @@ class LinkControllerIT extends AbstractIntegrationTest {
                         }
                         """))
                 .andExpect(status().isBadRequest())
-                .andExpect(header().string("Content-Type", is("application/problem+json")))
-                .andExpect(
-                        jsonPath(
-                                "$.type",
-                                is("https://zalando.github.io/problem/constraint-violation")))
-                .andExpect(jsonPath("$.title", is("Constraint Violation")))
-                .andExpect(jsonPath("$.status", is(400)))
-                .andExpect(jsonPath("$.violations", hasSize(1)))
-                .andExpect(jsonPath("$.violations[0].field", is("url")))
-                .andExpect(jsonPath("$.violations[0].message", is("URL cannot be blank")))
                 .andReturn();
     }
 }

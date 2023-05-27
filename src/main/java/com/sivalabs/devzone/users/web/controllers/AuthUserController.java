@@ -21,17 +21,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthUserController {
     private final SecurityUtils securityUtils;
 
-    @GetMapping("/auth/me")
+    @GetMapping("/me")
     @AnyAuthenticatedUser
     public ResponseEntity<AuthUserDTO> me() {
         User loginUser = securityUtils.loginUser();
         if (loginUser != null) {
-            AuthUserDTO userDTO =
-                    AuthUserDTO.builder()
-                            .name(loginUser.getName())
-                            .email(loginUser.getEmail())
-                            .role(loginUser.getRole())
-                            .build();
+            AuthUserDTO userDTO = AuthUserDTO.builder()
+                    .name(loginUser.getName())
+                    .email(loginUser.getEmail())
+                    .role(loginUser.getRole())
+                    .build();
             return ResponseEntity.ok(userDTO);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

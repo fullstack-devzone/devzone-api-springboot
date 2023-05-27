@@ -18,42 +18,41 @@ import org.springframework.security.test.context.support.WithMockUser;
 
 class AuthenticationControllerIT extends AbstractIntegrationTest {
 
-    @Autowired private UserService userService;
+    @Autowired
+    private UserService userService;
 
-    @Autowired private TokenHelper tokenHelper;
+    @Autowired
+    private TokenHelper tokenHelper;
 
-    @Autowired private ApplicationProperties properties;
+    @Autowired
+    private ApplicationProperties properties;
 
     @Test
     void should_login_successfully_with_valid_credentials() throws Exception {
         User user = createUser();
-        AuthenticationRequest authenticationRequestDTO =
-                AuthenticationRequest.builder()
-                        .username(user.getEmail())
-                        .password(user.getPassword())
-                        .build();
+        AuthenticationRequest authenticationRequestDTO = AuthenticationRequest.builder()
+                .username(user.getEmail())
+                .password(user.getPassword())
+                .build();
 
         this.mockMvc
-                .perform(
-                        post("/api/auth/login")
-                                .contentType(APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(authenticationRequestDTO)))
+                .perform(post("/api/login")
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(authenticationRequestDTO)))
                 .andExpect(status().isOk());
     }
 
     @Test
     void should_not_login_with_invalid_credentials() throws Exception {
-        AuthenticationRequest authenticationRequestDTO =
-                AuthenticationRequest.builder()
-                        .username("nonexisting@gmail.com")
-                        .password("secret")
-                        .build();
+        AuthenticationRequest authenticationRequestDTO = AuthenticationRequest.builder()
+                .username("nonexisting@gmail.com")
+                .password("secret")
+                .build();
 
         this.mockMvc
-                .perform(
-                        post("/api/auth/login")
-                                .contentType(APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(authenticationRequestDTO)))
+                .perform(post("/api/login")
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(authenticationRequestDTO)))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -62,23 +61,19 @@ class AuthenticationControllerIT extends AbstractIntegrationTest {
     void should_get_refreshed_authToken_if_authorized() throws Exception {
         String token = tokenHelper.generateToken("siva@gmail.com");
         this.mockMvc
-                .perform(
-                        post("/api/auth/refresh")
-                                .header(properties.getJwt().getHeader(), "Bearer " + token))
+                .perform(post("/api/refresh").header(properties.getJwt().getHeader(), "Bearer " + token))
                 .andExpect(status().isOk());
     }
 
     @Test
     void should_fail_to_get_refreshed_authToken_if_unauthorized() throws Exception {
-        this.mockMvc.perform(post("/api/auth/refresh")).andExpect(status().isForbidden());
+        this.mockMvc.perform(post("/api/refresh")).andExpect(status().isForbidden());
     }
 
     @Test
     void should_fail_to_get_refreshed_authToken_if_token_is_invalid() throws Exception {
         this.mockMvc
-                .perform(
-                        post("/api/auth/refresh")
-                                .header(properties.getJwt().getHeader(), "Bearer invalid-token"))
+                .perform(post("/api/refresh").header(properties.getJwt().getHeader(), "Bearer invalid-token"))
                 .andExpect(status().isForbidden());
     }
 

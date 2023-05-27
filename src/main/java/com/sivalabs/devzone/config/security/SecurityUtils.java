@@ -20,8 +20,7 @@ public class SecurityUtils {
         if (authentication == null || authentication.getPrincipal() == null) {
             return null;
         }
-        if (authentication.getPrincipal() instanceof SecurityUser) {
-            SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
+        if (authentication.getPrincipal() instanceof SecurityUser securityUser) {
             return securityUser.getUser();
         } else if (authentication instanceof UsernamePasswordAuthenticationToken) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
