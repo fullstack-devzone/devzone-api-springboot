@@ -3,8 +3,9 @@ package com.sivalabs.devzone.posts.web.controllers;
 import com.sivalabs.devzone.common.annotations.AnyAuthenticatedUser;
 import com.sivalabs.devzone.common.annotations.CurrentUser;
 import com.sivalabs.devzone.common.exceptions.ResourceNotFoundException;
+import com.sivalabs.devzone.common.models.PagedResult;
+import com.sivalabs.devzone.posts.models.CreatePostRequest;
 import com.sivalabs.devzone.posts.models.PostDTO;
-import com.sivalabs.devzone.posts.models.PostsDTO;
 import com.sivalabs.devzone.posts.services.PostService;
 import com.sivalabs.devzone.users.entities.User;
 import com.sivalabs.devzone.users.services.SecurityService;
@@ -27,15 +28,15 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/posts")
 @RequiredArgsConstructor
 @Slf4j
 public class PostController {
     private final PostService postService;
     private final SecurityService securityService;
 
-    @GetMapping("/posts")
-    public PostsDTO getPosts(
+    @GetMapping
+    public PagedResult<PostDTO> getPosts(
             @RequestParam(name = "query", defaultValue = "") String query,
             @RequestParam(name = "page", defaultValue = "1") Integer page) {
         if (StringUtils.isNotEmpty(query)) {
@@ -47,36 +48,35 @@ public class PostController {
         }
     }
 
-    @GetMapping("/posts/{id}")
+    @GetMapping("/{id}")
     public PostDTO getPost(@PathVariable Long id) {
         return postService
                 .getPostById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post with id: " + id + " not found"));
     }
 
-    @PostMapping("/posts")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @AnyAuthenticatedUser
     @Operation(summary = "Create Post", security = @SecurityRequirement(name = "bearerAuth"))
-    public PostDTO createPost(@Valid @RequestBody PostDTO postDTO, @CurrentUser User loginUser) {
-        postDTO.setCreatedUserId(loginUser.getId());
-        return postService.createPost(postDTO);
+    public PostDTO createPost(@Valid @RequestBody CreatePostRequest createPostRequest, @CurrentUser User loginUser) {
+        createPostRequest.setUserId(loginUser.getId());
+        return postService.createPost(createPostRequest);
     }
 
-    @DeleteMapping("/posts/{id}")
+    @DeleteMapping("/{id}")
     @AnyAuthenticatedUser
     @Operation(summary = "Delete Post", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<Void> deletePost(@PathVariable Long id, @CurrentUser User loginUser) {
-        PostDTO post = postService.getPostById(id).orElse(null);
-        this.checkPrivilege(id, post, loginUser);
+        PostDTO post = postService.getPostById(id).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+        this.checkPrivilege(post, loginUser);
         postService.deletePost(id);
         return ResponseEntity.ok().build();
     }
 
-    private void checkPrivilege(Long postId, PostDTO post, User loginUser) {
-        if (post == null
-                || !(post.getCreatedUserId().equals(loginUser.getId()) || securityService.isCurrentUserAdmin())) {
-            throw new ResourceNotFoundException("Post not found with id=" + postId);
+    private void checkPrivilege(PostDTO post, User loginUser) {
+        if (!(post.getCreatedBy().getId().equals(loginUser.getId()) || securityService.isCurrentUserAdmin())) {
+            throw new ResourceNotFoundException("Post not found with id=" + post.getId());
         }
     }
 }

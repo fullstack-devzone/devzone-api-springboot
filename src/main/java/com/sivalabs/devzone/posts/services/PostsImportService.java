@@ -3,12 +3,11 @@ package com.sivalabs.devzone.posts.services;
 import com.opencsv.CSVIterator;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
-import com.sivalabs.devzone.posts.models.PostDTO;
+import com.sivalabs.devzone.posts.models.CreatePostRequest;
 import com.sivalabs.devzone.users.services.UserService;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
@@ -35,17 +34,18 @@ public class PostsImportService {
             csvReader.skip(1);
             CSVIterator iterator = new CSVIterator(csvReader);
 
+            Long userId =
+                    userService.getUserByEmail(SYSTEM_USER_EMAIL).orElseThrow().getId();
+
             while (iterator.hasNext()) {
                 String[] nextLine = iterator.next();
-                PostDTO postDTO = new PostDTO();
-                postDTO.setUrl(nextLine[0]);
-                postDTO.setTitle(nextLine[1]);
-                postDTO.setCreatedUserId(userService
-                        .getUserByEmail(SYSTEM_USER_EMAIL)
-                        .orElseThrow()
-                        .getId());
-                postDTO.setCreatedAt(Instant.now());
-                postService.createPost(postDTO);
+                CreatePostRequest createPostRequest = new CreatePostRequest();
+                createPostRequest.setUrl(nextLine[0]);
+                createPostRequest.setTitle(nextLine[1]);
+                createPostRequest.setContent(nextLine[1]);
+                createPostRequest.setUserId(userId);
+
+                postService.createPost(createPostRequest);
                 count++;
             }
         }

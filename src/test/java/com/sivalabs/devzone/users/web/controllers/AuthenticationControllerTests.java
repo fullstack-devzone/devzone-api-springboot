@@ -9,14 +9,15 @@ import com.sivalabs.devzone.config.ApplicationProperties;
 import com.sivalabs.devzone.config.security.TokenHelper;
 import com.sivalabs.devzone.users.entities.User;
 import com.sivalabs.devzone.users.models.AuthenticationRequest;
+import com.sivalabs.devzone.users.models.CreateUserRequest;
 import com.sivalabs.devzone.users.models.UserDTO;
 import com.sivalabs.devzone.users.services.UserService;
-import com.sivalabs.devzone.utils.TestDataFactory;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 
-class AuthenticationControllerIT extends AbstractIntegrationTest {
+class AuthenticationControllerTests extends AbstractIntegrationTest {
 
     @Autowired
     private UserService userService;
@@ -78,11 +79,15 @@ class AuthenticationControllerIT extends AbstractIntegrationTest {
     }
 
     private User createUser() {
-        User user = TestDataFactory.createUser();
-        String plainPwd = user.getPassword();
-        UserDTO userDTO = userService.createUser(UserDTO.fromEntity(user));
+        String uuid = UUID.randomUUID().toString();
+        CreateUserRequest request = new CreateUserRequest(uuid, uuid + "@gmail.com", uuid);
+        UserDTO userDTO = userService.createUser(request);
+        User user = new User();
         user.setId(userDTO.getId());
-        user.setPassword(plainPwd);
+        user.setName(userDTO.getName());
+        user.setEmail(userDTO.getEmail());
+        user.setPassword(request.getPassword());
+        user.setRole(userDTO.getRole());
         return user;
     }
 }

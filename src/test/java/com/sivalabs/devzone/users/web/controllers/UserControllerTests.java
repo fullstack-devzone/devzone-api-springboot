@@ -9,7 +9,7 @@ import com.sivalabs.devzone.common.AbstractIntegrationTest;
 import com.sivalabs.devzone.users.models.CreateUserRequest;
 import org.junit.jupiter.api.Test;
 
-class UserControllerIT extends AbstractIntegrationTest {
+class UserControllerTests extends AbstractIntegrationTest {
 
     @Test
     void should_find_user_by_id() throws Exception {
@@ -19,11 +19,7 @@ class UserControllerIT extends AbstractIntegrationTest {
 
     @Test
     void should_create_new_user_with_valid_data() throws Exception {
-        CreateUserRequest createUserRequestDTO = CreateUserRequest.builder()
-                .email("myemail@gmail.com")
-                .password("secret")
-                .name("myname")
-                .build();
+        CreateUserRequest createUserRequestDTO = new CreateUserRequest("myname", "myemail@gmail.com", "secret");
 
         this.mockMvc
                 .perform(post("/api/users")
@@ -34,11 +30,7 @@ class UserControllerIT extends AbstractIntegrationTest {
 
     @Test
     void should_fail_to_create_new_user_with_existing_email() throws Exception {
-        CreateUserRequest createUserRequestDTO = CreateUserRequest.builder()
-                .email("admin@gmail.com")
-                .password("secret")
-                .name("myname")
-                .build();
+        CreateUserRequest createUserRequestDTO = new CreateUserRequest("admin@gmail.com", "secret", "myname");
 
         this.mockMvc
                 .perform(post("/api/users")

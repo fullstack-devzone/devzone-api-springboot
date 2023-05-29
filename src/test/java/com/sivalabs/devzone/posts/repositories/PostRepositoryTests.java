@@ -16,7 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
             "spring.datasource.url=jdbc:tc:postgresql:15.3-alpine:///testdb"
         })
 @ActiveProfiles(PROFILE_IT)
-class PostRepositoryIT {
+class PostRepositoryTests {
 
     @Autowired
     private PostRepository postRepository;

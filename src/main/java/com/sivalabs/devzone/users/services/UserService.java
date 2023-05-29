@@ -3,6 +3,7 @@ package com.sivalabs.devzone.users.services;
 import com.sivalabs.devzone.common.exceptions.BadRequestException;
 import com.sivalabs.devzone.users.entities.RoleEnum;
 import com.sivalabs.devzone.users.entities.User;
+import com.sivalabs.devzone.users.models.CreateUserRequest;
 import com.sivalabs.devzone.users.models.UserDTO;
 import com.sivalabs.devzone.users.repositories.UserRepository;
 import java.util.Optional;
@@ -30,13 +31,15 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public UserDTO createUser(UserDTO user) {
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new BadRequestException("Email " + user.getEmail() + " is already in use");
+    public UserDTO createUser(CreateUserRequest createUserRequest) {
+        if (userRepository.existsByEmail(createUserRequest.getEmail())) {
+            throw new BadRequestException("Email " + createUserRequest.getEmail() + " is already in use");
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        User userEntity = user.toEntity();
-        userEntity.setRole(RoleEnum.ROLE_USER);
-        return UserDTO.fromEntity(userRepository.save(userEntity));
+        User user = new User();
+        user.setName(createUserRequest.getName());
+        user.setEmail(createUserRequest.getEmail());
+        user.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
+        user.setRole(RoleEnum.ROLE_USER);
+        return UserDTO.fromEntity(userRepository.save(user));
     }
 }

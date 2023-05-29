@@ -33,8 +33,6 @@ public abstract class AbstractWebMvcTest {
     @MockBean
     protected PasswordEncoder passwordEncoder;
 
-    // @MockBean protected RoleHierarchyImpl roleHierarchy;
-
     @Autowired
     protected ObjectMapper objectMapper;
 }

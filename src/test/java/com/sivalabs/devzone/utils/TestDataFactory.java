@@ -10,11 +10,6 @@ public class TestDataFactory {
         return createUser(uuid + "@gmail.com", uuid);
     }
 
-    public static User createUser(String email) {
-        String uuid = UUID.randomUUID().toString();
-        return createUser(email, uuid);
-    }
-
     public static User createUser(String email, String password) {
         User user = new User();
         user.setName("someuser");

@@ -31,8 +31,6 @@ public class UserController {
     @ResponseStatus(CREATED)
     public UserDTO createUser(@RequestBody @Valid CreateUserRequest createUserRequest) {
         log.info("process=create_user, user_email={}", createUserRequest.getEmail());
-        UserDTO userDTO = new UserDTO(
-                null, createUserRequest.getName(), createUserRequest.getEmail(), createUserRequest.getPassword(), null);
-        return userService.createUser(userDTO);
+        return userService.createUser(createUserRequest);
     }
 }

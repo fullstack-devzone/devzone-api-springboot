@@ -13,11 +13,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    @Query("select l.id from Post l")
-    Page<Long> fetchPostIds(Pageable pageable);
-
-    @Query("select l.id from Post l where lower(l.title) like lower(concat('%', :query,'%'))")
-    Page<Long> fetchPostIdsByTitleContainingIgnoreCase(@Param("query") String query, Pageable pageable);
+    @Query("select p from Post p where lower(p.title) like lower(concat('%', :query,'%'))")
+    Page<Post> searchByTitle(@Param("query") String query, Pageable pageable);
 
     @Query("select DISTINCT l from Post l join fetch l.createdBy where l.id in ?1")
     List<Post> findPosts(List<Long> postIds, Sort sort);

@@ -7,7 +7,7 @@ import com.sivalabs.devzone.common.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.test.context.support.WithMockUser;
 
-class AuthUserControllerIT extends AbstractIntegrationTest {
+class AuthUserControllerTests extends AbstractIntegrationTest {
 
     @Test
     @WithMockUser("siva@gmail.com")
