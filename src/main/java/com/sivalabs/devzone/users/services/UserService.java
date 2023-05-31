@@ -32,13 +32,13 @@ public class UserService {
     }
 
     public UserDTO createUser(CreateUserRequest createUserRequest) {
-        if (userRepository.existsByEmail(createUserRequest.getEmail())) {
-            throw new BadRequestException("Email " + createUserRequest.getEmail() + " is already in use");
+        if (userRepository.existsByEmail(createUserRequest.email())) {
+            throw new BadRequestException("Email " + createUserRequest.email() + " is already in use");
         }
         User user = new User();
-        user.setName(createUserRequest.getName());
-        user.setEmail(createUserRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
+        user.setName(createUserRequest.name());
+        user.setEmail(createUserRequest.email());
+        user.setPassword(passwordEncoder.encode(createUserRequest.password()));
         user.setRole(RoleEnum.ROLE_USER);
         return UserDTO.fromEntity(userRepository.save(user));
     }

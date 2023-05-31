@@ -30,7 +30,7 @@ public class UserController {
     @PostMapping
     @ResponseStatus(CREATED)
     public UserDTO createUser(@RequestBody @Valid CreateUserRequest createUserRequest) {
-        log.info("process=create_user, user_email={}", createUserRequest.getEmail());
+        log.info("process=create_user, user_email={}", createUserRequest.email());
         return userService.createUser(createUserRequest);
     }
 }

@@ -39,12 +39,8 @@ public class PostsImportService {
 
             while (iterator.hasNext()) {
                 String[] nextLine = iterator.next();
-                CreatePostRequest createPostRequest = new CreatePostRequest();
-                createPostRequest.setUrl(nextLine[0]);
-                createPostRequest.setTitle(nextLine[1]);
-                createPostRequest.setContent(nextLine[1]);
-                createPostRequest.setUserId(userId);
-
+                CreatePostRequest createPostRequest =
+                        new CreatePostRequest(nextLine[1], nextLine[0], nextLine[1], userId);
                 postService.createPost(createPostRequest);
                 count++;
             }

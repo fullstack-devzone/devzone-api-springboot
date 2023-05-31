@@ -60,8 +60,9 @@ public class PostController {
     @AnyAuthenticatedUser
     @Operation(summary = "Create Post", security = @SecurityRequirement(name = "bearerAuth"))
     public PostDTO createPost(@Valid @RequestBody CreatePostRequest createPostRequest, @CurrentUser User loginUser) {
-        createPostRequest.setUserId(loginUser.getId());
-        return postService.createPost(createPostRequest);
+        CreatePostRequest request = new CreatePostRequest(
+                createPostRequest.title(), createPostRequest.url(), createPostRequest.content(), loginUser.getId());
+        return postService.createPost(request);
     }
 
     @DeleteMapping("/{id}")

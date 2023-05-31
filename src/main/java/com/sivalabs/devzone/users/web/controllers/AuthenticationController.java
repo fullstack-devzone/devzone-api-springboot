@@ -38,7 +38,7 @@ public class AuthenticationController {
             @RequestBody AuthenticationRequest credentials) {
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(credentials.getUsername(), credentials.getPassword()));
+                    new UsernamePasswordAuthenticationToken(credentials.username(), credentials.password()));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -68,15 +68,12 @@ public class AuthenticationController {
     }
 
     private AuthenticationResponse getAuthenticationResponse(SecurityUser user, String token) {
-        return AuthenticationResponse.builder()
-                .user(AuthUserDTO.builder()
-                        .name(user.getUser().getName())
-                        .email(user.getUser().getEmail())
-                        .role(user.getUser().getRole())
-                        .build())
-                .accessToken(token)
-                .expiresAt(LocalDateTime.now()
-                        .plusSeconds(applicationProperties.getJwt().getExpiresIn()))
-                .build();
+        return new AuthenticationResponse(
+                token,
+                LocalDateTime.now().plusSeconds(applicationProperties.getJwt().getExpiresIn()),
+                new AuthUserDTO(
+                        user.getUser().getName(),
+                        user.getUser().getEmail(),
+                        user.getUser().getRole()));
     }
 }

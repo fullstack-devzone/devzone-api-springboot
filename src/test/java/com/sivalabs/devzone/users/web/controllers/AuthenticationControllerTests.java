@@ -31,10 +31,7 @@ class AuthenticationControllerTests extends AbstractIntegrationTest {
     @Test
     void should_login_successfully_with_valid_credentials() throws Exception {
         User user = createUser();
-        AuthenticationRequest authenticationRequestDTO = AuthenticationRequest.builder()
-                .username(user.getEmail())
-                .password(user.getPassword())
-                .build();
+        AuthenticationRequest authenticationRequestDTO = new AuthenticationRequest(user.getEmail(), user.getPassword());
 
         this.mockMvc
                 .perform(post("/api/login")
@@ -45,10 +42,7 @@ class AuthenticationControllerTests extends AbstractIntegrationTest {
 
     @Test
     void should_not_login_with_invalid_credentials() throws Exception {
-        AuthenticationRequest authenticationRequestDTO = AuthenticationRequest.builder()
-                .username("nonexisting@gmail.com")
-                .password("secret")
-                .build();
+        AuthenticationRequest authenticationRequestDTO = new AuthenticationRequest("nonexisting@gmail.com", "secret");
 
         this.mockMvc
                 .perform(post("/api/login")
@@ -83,11 +77,11 @@ class AuthenticationControllerTests extends AbstractIntegrationTest {
         CreateUserRequest request = new CreateUserRequest(uuid, uuid + "@gmail.com", uuid);
         UserDTO userDTO = userService.createUser(request);
         User user = new User();
-        user.setId(userDTO.getId());
-        user.setName(userDTO.getName());
-        user.setEmail(userDTO.getEmail());
-        user.setPassword(request.getPassword());
-        user.setRole(userDTO.getRole());
+        user.setId(userDTO.id());
+        user.setName(userDTO.name());
+        user.setEmail(userDTO.email());
+        user.setPassword(request.password());
+        user.setRole(userDTO.role());
         return user;
     }
 }

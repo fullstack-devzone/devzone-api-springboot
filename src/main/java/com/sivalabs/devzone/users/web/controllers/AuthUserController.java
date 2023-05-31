@@ -26,11 +26,7 @@ public class AuthUserController {
     public ResponseEntity<AuthUserDTO> me() {
         User loginUser = securityUtils.loginUser();
         if (loginUser != null) {
-            AuthUserDTO userDTO = AuthUserDTO.builder()
-                    .name(loginUser.getName())
-                    .email(loginUser.getEmail())
-                    .role(loginUser.getRole())
-                    .build();
+            AuthUserDTO userDTO = new AuthUserDTO(loginUser.getName(), loginUser.getEmail(), loginUser.getRole());
             return ResponseEntity.ok(userDTO);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

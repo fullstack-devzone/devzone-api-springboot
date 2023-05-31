@@ -58,10 +58,10 @@ public class PostService {
 
     public PostDTO createPost(CreatePostRequest createPostRequest) {
         Post post = new Post();
-        post.setUrl(createPostRequest.getUrl());
-        post.setTitle(createPostRequest.getTitle());
-        post.setContent(createPostRequest.getContent());
-        post.setCreatedBy(userRepository.getReferenceById(createPostRequest.getUserId()));
+        post.setUrl(createPostRequest.url());
+        post.setTitle(createPostRequest.title());
+        post.setContent(createPostRequest.content());
+        post.setCreatedBy(userRepository.getReferenceById(createPostRequest.userId()));
 
         log.debug("create post with url={}", post.getUrl());
         Post savedPost = postRepository.save(post);
