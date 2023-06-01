@@ -1,21 +1,18 @@
 package com.sivalabs.devzone.users.web.controllers;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static io.restassured.RestAssured.given;
 
 import com.sivalabs.devzone.common.AbstractIntegrationTest;
-import com.sivalabs.devzone.config.ApplicationProperties;
 import com.sivalabs.devzone.config.security.TokenHelper;
 import com.sivalabs.devzone.users.entities.User;
 import com.sivalabs.devzone.users.models.AuthenticationRequest;
 import com.sivalabs.devzone.users.models.CreateUserRequest;
 import com.sivalabs.devzone.users.models.UserDTO;
 import com.sivalabs.devzone.users.services.UserService;
+import io.restassured.http.ContentType;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.test.context.support.WithMockUser;
 
 class AuthenticationControllerTests extends AbstractIntegrationTest {
 
@@ -25,51 +22,52 @@ class AuthenticationControllerTests extends AbstractIntegrationTest {
     @Autowired
     private TokenHelper tokenHelper;
 
-    @Autowired
-    private ApplicationProperties properties;
-
     @Test
-    void should_login_successfully_with_valid_credentials() throws Exception {
+    void shouldLoginSuccessfullyWithValidCredentials() {
         User user = createUser();
         AuthenticationRequest authenticationRequestDTO = new AuthenticationRequest(user.getEmail(), user.getPassword());
 
-        this.mockMvc
-                .perform(post("/api/login")
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(authenticationRequestDTO)))
-                .andExpect(status().isOk());
+        given().contentType(ContentType.JSON)
+                .body(authenticationRequestDTO)
+                .post("/api/login")
+                .then()
+                .statusCode(200);
     }
 
     @Test
-    void should_not_login_with_invalid_credentials() throws Exception {
+    void shouldNotLoginWithInvalidCredentials() {
         AuthenticationRequest authenticationRequestDTO = new AuthenticationRequest("nonexisting@gmail.com", "secret");
 
-        this.mockMvc
-                .perform(post("/api/login")
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(authenticationRequestDTO)))
-                .andExpect(status().isUnauthorized());
+        given().contentType(ContentType.JSON)
+                .body(authenticationRequestDTO)
+                .post("/api/login")
+                .then()
+                .statusCode(401);
     }
 
     @Test
-    @WithMockUser("siva@gmail.com")
-    void should_get_refreshed_authToken_if_authorized() throws Exception {
+    void shouldGetRefreshedAuthTokenIfAuthorized() {
         String token = tokenHelper.generateToken("siva@gmail.com");
-        this.mockMvc
-                .perform(post("/api/refresh").header(properties.getJwt().getHeader(), "Bearer " + token))
-                .andExpect(status().isOk());
+
+        given().contentType(ContentType.JSON)
+                .header(properties.getJwt().getHeader(), "Bearer " + token)
+                .post("/api/refresh")
+                .then()
+                .statusCode(200);
     }
 
     @Test
-    void should_fail_to_get_refreshed_authToken_if_unauthorized() throws Exception {
-        this.mockMvc.perform(post("/api/refresh")).andExpect(status().isForbidden());
+    void shouldFailToGetRefreshedAuthTokenIfUnauthorized() {
+        given().contentType(ContentType.JSON).post("/api/refresh").then().statusCode(403);
     }
 
     @Test
-    void should_fail_to_get_refreshed_authToken_if_token_is_invalid() throws Exception {
-        this.mockMvc
-                .perform(post("/api/refresh").header(properties.getJwt().getHeader(), "Bearer invalid-token"))
-                .andExpect(status().isForbidden());
+    void shouldFailToGetRefreshedAuthTokenIfTokenIsInvalid() {
+        given().contentType(ContentType.JSON)
+                .header(properties.getJwt().getHeader(), "Bearer invalid-token")
+                .post("/api/refresh")
+                .then()
+                .statusCode(403);
     }
 
     private User createUser() {

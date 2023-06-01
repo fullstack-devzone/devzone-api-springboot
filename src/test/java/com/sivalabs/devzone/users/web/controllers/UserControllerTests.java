@@ -1,41 +1,38 @@
 package com.sivalabs.devzone.users.web.controllers;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static io.restassured.RestAssured.given;
 
 import com.sivalabs.devzone.common.AbstractIntegrationTest;
 import com.sivalabs.devzone.users.models.CreateUserRequest;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 
 class UserControllerTests extends AbstractIntegrationTest {
 
     @Test
-    void should_find_user_by_id() throws Exception {
+    void shouldFindUserById() {
         Long userId = 1L;
-        this.mockMvc.perform(get("/api/users/{id}", userId)).andExpect(status().isOk());
+        given().get("/api/users/{id}", userId).then().statusCode(200);
     }
 
     @Test
-    void should_create_new_user_with_valid_data() throws Exception {
+    void shouldCreateNewUserWithValidData() {
         CreateUserRequest createUserRequestDTO = new CreateUserRequest("myname", "myemail@gmail.com", "secret");
-
-        this.mockMvc
-                .perform(post("/api/users")
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(createUserRequestDTO)))
-                .andExpect(status().isCreated());
+        given().contentType(ContentType.JSON)
+                .body(createUserRequestDTO)
+                .post("/api/users")
+                .then()
+                .statusCode(201);
     }
 
     @Test
-    void should_fail_to_create_new_user_with_existing_email() throws Exception {
+    void shouldFailToCreateNewUserWithExistingEmail() {
         CreateUserRequest createUserRequestDTO = new CreateUserRequest("admin@gmail.com", "secret", "myname");
 
-        this.mockMvc
-                .perform(post("/api/users")
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(createUserRequestDTO)))
-                .andExpect(status().isBadRequest());
+        given().contentType(ContentType.JSON)
+                .body(createUserRequestDTO)
+                .post("/api/users")
+                .then()
+                .statusCode(400);
     }
 }

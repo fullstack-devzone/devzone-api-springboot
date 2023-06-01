@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    @Query("select p from Post p where lower(p.title) like lower(concat('%', :query,'%'))")
+    @Query("select p from Post p where upper(p.title) like upper(:query)")
     Page<Post> searchByTitle(@Param("query") String query, Pageable pageable);
+
+    Page<Post> findByTitleContainingIgnoreCase(String query, Pageable pageable);
 }

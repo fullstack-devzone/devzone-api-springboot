@@ -58,7 +58,7 @@ public class PostController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @AnyAuthenticatedUser
-    @Operation(summary = "Create Post", security = @SecurityRequirement(name = "bearerAuth"))
+    // @Operation(summary = "Create Post", security = @SecurityRequirement(name = "bearerAuth"))
     public PostDTO createPost(@Valid @RequestBody CreatePostRequest createPostRequest, @CurrentUser User loginUser) {
         CreatePostRequest request = new CreatePostRequest(
                 createPostRequest.title(), createPostRequest.url(), createPostRequest.content(), loginUser.getId());

@@ -1,22 +1,23 @@
 package com.sivalabs.devzone.users.web.controllers;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static io.restassured.RestAssured.given;
 
 import com.sivalabs.devzone.common.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.test.context.support.WithMockUser;
 
 class AuthUserControllerTests extends AbstractIntegrationTest {
 
     @Test
-    @WithMockUser("siva@gmail.com")
-    void should_get_login_user_details() throws Exception {
-        this.mockMvc.perform(get("/api/me")).andExpect(status().isOk());
+    void shouldGetLoginUserDetails() {
+        String jwtToken = this.getAuthToken("admin@gmail.com", "admin");
+        given().header(properties.getJwt().getHeader(), "Bearer " + jwtToken)
+                .get("/api/me")
+                .then()
+                .statusCode(200);
     }
 
     @Test
-    void should_fail_to_get_login_user_details_if_unauthorized() throws Exception {
-        this.mockMvc.perform(get("/api/me")).andExpect(status().isForbidden());
+    void shouldFailToGetLoginUserDetailsIfUnauthorized() {
+        given().get("/api/me").then().statusCode(403);
     }
 }

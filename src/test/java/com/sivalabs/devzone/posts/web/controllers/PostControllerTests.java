@@ -1,24 +1,21 @@
 package com.sivalabs.devzone.posts.web.controllers;
 
+import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.opencsv.exceptions.CsvValidationException;
 import com.sivalabs.devzone.common.AbstractIntegrationTest;
 import com.sivalabs.devzone.posts.services.PostService;
 import com.sivalabs.devzone.posts.services.PostsImportService;
+import io.restassured.http.ContentType;
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 
 class PostControllerTests extends AbstractIntegrationTest {
 
@@ -44,18 +41,18 @@ class PostControllerTests extends AbstractIntegrationTest {
             boolean isFirst,
             boolean isLast,
             boolean hasNext,
-            boolean hasPrevious)
-            throws Exception {
-        this.mockMvc
-                .perform(get("/api/posts?page=" + pageNo))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalElements", equalTo(totalElements)))
-                .andExpect(jsonPath("$.totalPages", equalTo(totalPages)))
-                .andExpect(jsonPath("$.pageNumber", equalTo(pageNumber)))
-                .andExpect(jsonPath("$.isFirst", equalTo(isFirst)))
-                .andExpect(jsonPath("$.isLast", equalTo(isLast)))
-                .andExpect(jsonPath("$.hasNext", equalTo(hasNext)))
-                .andExpect(jsonPath("$.hasPrevious", equalTo(hasPrevious)));
+            boolean hasPrevious) {
+
+        given().get("/api/posts?page={page}", pageNo)
+                .then()
+                .statusCode(200)
+                .body("totalElements", equalTo(totalElements))
+                .body("totalPages", equalTo(totalPages))
+                .body("pageNumber", equalTo(pageNumber))
+                .body("isFirst", equalTo(isFirst))
+                .body("isLast", equalTo(isLast))
+                .body("hasNext", equalTo(hasNext))
+                .body("hasPrevious", equalTo(hasPrevious));
     }
 
     @ParameterizedTest
@@ -69,55 +66,52 @@ class PostControllerTests extends AbstractIntegrationTest {
             boolean isFirst,
             boolean isLast,
             boolean hasNext,
-            boolean hasPrevious)
-            throws Exception {
-        this.mockMvc
-                .perform(get("/api/posts?query={query}&page={page}", query, pageNo))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalElements", equalTo(totalElements)))
-                .andExpect(jsonPath("$.totalPages", equalTo(totalPages)))
-                .andExpect(jsonPath("$.pageNumber", equalTo(pageNumber)))
-                .andExpect(jsonPath("$.isFirst", equalTo(isFirst)))
-                .andExpect(jsonPath("$.isLast", equalTo(isLast)))
-                .andExpect(jsonPath("$.hasNext", equalTo(hasNext)))
-                .andExpect(jsonPath("$.hasPrevious", equalTo(hasPrevious)));
+            boolean hasPrevious) {
+
+        given().get("/api/posts?query={query}&page={page}", query, pageNo)
+                .then()
+                .statusCode(200)
+                .body("totalElements", equalTo(totalElements))
+                .body("totalPages", equalTo(totalPages))
+                .body("pageNumber", equalTo(pageNumber))
+                .body("isFirst", equalTo(isFirst))
+                .body("isLast", equalTo(isLast))
+                .body("hasNext", equalTo(hasNext))
+                .body("hasPrevious", equalTo(hasPrevious));
     }
 
     @Test
-    @WithMockUser(username = "admin@gmail.com")
-    void shouldCreatePostSuccessfully() throws Exception {
-        this.mockMvc
-                .perform(
-                        post("/api/posts")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(
-                                        """
+    void shouldCreatePostSuccessfully() {
+        String jwtToken = this.getAuthToken("admin@gmail.com", "admin");
+        given().contentType("application/json")
+                .header(properties.getJwt().getHeader(), "Bearer " + jwtToken)
+                .body(
+                        """
                         {
                             "title": "SivaLabs Blog",
                             "url": "https://sivalabs.in",
                             "content": "java blog"
                         }
-                        """))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id", notNullValue()))
-                .andExpect(jsonPath("$.title", is("SivaLabs Blog")))
-                .andExpect(jsonPath("$.url", is("https://sivalabs.in")));
+                        """)
+                .post("/api/posts")
+                .then()
+                .statusCode(201)
+                .body("id", notNullValue())
+                .body("title", is("SivaLabs Blog"))
+                .body("url", is("https://sivalabs.in"));
     }
 
     @Test
-    @WithMockUser(username = "admin@gmail.com")
-    void shouldFailToCreatePostWhenUrlIsNotPresent() throws Exception {
-        this.mockMvc
-                .perform(
-                        post("/api/posts")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(
-                                        """
+    void shouldFailToCreatePostWhenUrlIsNotPresent() {
+        given().contentType(ContentType.JSON)
+                .body(
+                        """
                         {
                             "title": "SivaLabs Blog"
                         }
-                        """))
-                .andExpect(status().isBadRequest())
-                .andReturn();
+                        """)
+                .post("/api/posts")
+                .then()
+                .statusCode(400);
     }
 }
