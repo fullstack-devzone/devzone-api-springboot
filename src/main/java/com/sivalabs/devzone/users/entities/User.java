@@ -16,6 +16,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -62,5 +63,13 @@ public class User implements Serializable {
     @PreUpdate
     public void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    public boolean isCurrentUserAdmin() {
+        return isUserHasAnyRole(RoleEnum.ROLE_ADMIN);
+    }
+
+    public boolean isUserHasAnyRole(RoleEnum... roles) {
+        return Arrays.asList(roles).contains(this.getRole());
     }
 }

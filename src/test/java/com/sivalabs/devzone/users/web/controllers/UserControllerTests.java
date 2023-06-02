@@ -1,10 +1,13 @@
 package com.sivalabs.devzone.users.web.controllers;
 
+import static com.sivalabs.devzone.common.TestConstants.ADMIN_EMAIL;
 import static io.restassured.RestAssured.given;
+import static org.instancio.Select.field;
 
 import com.sivalabs.devzone.common.AbstractIntegrationTest;
 import com.sivalabs.devzone.users.models.CreateUserRequest;
 import io.restassured.http.ContentType;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 
 class UserControllerTests extends AbstractIntegrationTest {
@@ -17,9 +20,10 @@ class UserControllerTests extends AbstractIntegrationTest {
 
     @Test
     void shouldCreateNewUserWithValidData() {
-        CreateUserRequest createUserRequestDTO = new CreateUserRequest("myname", "myemail@gmail.com", "secret");
+
+        var request = Instancio.of(CreateUserRequest.class).create();
         given().contentType(ContentType.JSON)
-                .body(createUserRequestDTO)
+                .body(request)
                 .post("/api/users")
                 .then()
                 .statusCode(201);
@@ -27,10 +31,12 @@ class UserControllerTests extends AbstractIntegrationTest {
 
     @Test
     void shouldFailToCreateNewUserWithExistingEmail() {
-        CreateUserRequest createUserRequestDTO = new CreateUserRequest("admin@gmail.com", "secret", "myname");
+        var request = Instancio.of(CreateUserRequest.class)
+                .set(field(CreateUserRequest::email), ADMIN_EMAIL)
+                .create();
 
         given().contentType(ContentType.JSON)
-                .body(createUserRequestDTO)
+                .body(request)
                 .post("/api/users")
                 .then()
                 .statusCode(400);

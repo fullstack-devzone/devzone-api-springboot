@@ -21,10 +21,10 @@ class AuthenticationControllerTests extends AbstractIntegrationTest {
     @Test
     void shouldLoginSuccessfullyWithValidCredentials() {
         User user = createUser();
-        AuthenticationRequest authenticationRequestDTO = new AuthenticationRequest(user.getEmail(), user.getPassword());
+        var authenticationRequest = new AuthenticationRequest(user.getEmail(), user.getPassword());
 
         given().contentType(ContentType.JSON)
-                .body(authenticationRequestDTO)
+                .body(authenticationRequest)
                 .post("/api/login")
                 .then()
                 .statusCode(200);
@@ -32,10 +32,10 @@ class AuthenticationControllerTests extends AbstractIntegrationTest {
 
     @Test
     void shouldNotLoginWithInvalidCredentials() {
-        AuthenticationRequest authenticationRequestDTO = new AuthenticationRequest("nonexisting@gmail.com", "secret");
+        var authenticationRequest = new AuthenticationRequest("nonexisting@gmail.com", "secret");
 
         given().contentType(ContentType.JSON)
-                .body(authenticationRequestDTO)
+                .body(authenticationRequest)
                 .post("/api/login")
                 .then()
                 .statusCode(401);

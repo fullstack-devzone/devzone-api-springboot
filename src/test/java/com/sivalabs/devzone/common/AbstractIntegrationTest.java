@@ -1,6 +1,5 @@
 package com.sivalabs.devzone.common;
 
-import static com.sivalabs.devzone.utils.TestConstants.PROFILE_IT;
 import static io.restassured.RestAssured.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -17,7 +16,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles(PROFILE_IT)
+@ActiveProfiles("integration-test")
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Import(TestcontainersConfig.class)
 public abstract class AbstractIntegrationTest {

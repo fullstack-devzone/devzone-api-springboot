@@ -1,5 +1,8 @@
 package com.sivalabs.devzone.posts.web.controllers;
 
+import static com.sivalabs.devzone.common.TestConstants.ADMIN_EMAIL;
+import static com.sivalabs.devzone.common.TestConstants.ADMIN_PASSWORD;
+import static com.sivalabs.devzone.common.TestConstants.NORMAL_USER_EMAIL;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.*;
@@ -7,8 +10,13 @@ import static org.hamcrest.Matchers.is;
 
 import com.opencsv.exceptions.CsvValidationException;
 import com.sivalabs.devzone.common.AbstractIntegrationTest;
+import com.sivalabs.devzone.config.security.TokenHelper;
+import com.sivalabs.devzone.posts.models.CreatePostRequest;
+import com.sivalabs.devzone.posts.models.PostDTO;
 import com.sivalabs.devzone.posts.services.PostService;
 import com.sivalabs.devzone.posts.services.PostsImportService;
+import com.sivalabs.devzone.users.entities.User;
+import com.sivalabs.devzone.users.services.UserService;
 import io.restassured.http.ContentType;
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +31,13 @@ class PostControllerTests extends AbstractIntegrationTest {
     PostService postService;
 
     @Autowired
+    UserService userService;
+
+    @Autowired
     PostsImportService postsImportService;
+
+    @Autowired
+    TokenHelper tokenHelper;
 
     @BeforeEach
     void setUp() throws CsvValidationException, IOException {
@@ -82,7 +96,7 @@ class PostControllerTests extends AbstractIntegrationTest {
 
     @Test
     void shouldCreatePostSuccessfully() {
-        String jwtToken = this.getAuthToken("admin@gmail.com", "admin");
+        String jwtToken = tokenHelper.generateToken(ADMIN_EMAIL);
         given().contentType("application/json")
                 .header(properties.getJwt().getHeader(), "Bearer " + jwtToken)
                 .body(
@@ -113,5 +127,77 @@ class PostControllerTests extends AbstractIntegrationTest {
                 .post("/api/posts")
                 .then()
                 .statusCode(400);
+    }
+
+    @Test
+    void shouldGetPostByIdSuccessfully() {
+        User user = userService.getUserByEmail(NORMAL_USER_EMAIL).orElseThrow();
+        var request = new CreatePostRequest("Sample title", "https://sivalabs.in", "Sample content", user.getId());
+        PostDTO post = postService.createPost(request);
+        given().contentType("application/json")
+                .get("/api/posts/{id}", post.getId())
+                .then()
+                .statusCode(200)
+                .body("id", equalTo(post.getId().intValue()))
+                .body("title", equalTo(post.getTitle()))
+                .body("url", equalTo(post.getUrl()))
+                .body("createdBy.id", equalTo(user.getId().intValue()));
+    }
+
+    @Test
+    void shouldGetNotFoundWhenPostIdNotExist() {
+        given().contentType("application/json")
+                .get("/api/posts/{id}", 9999)
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    void shouldBeAbleToDeleteOwnPosts() {
+        User user = userService.getUserByEmail(NORMAL_USER_EMAIL).orElseThrow();
+        String jwtToken = tokenHelper.generateToken(NORMAL_USER_EMAIL);
+        var request = new CreatePostRequest("Sample title", "https://sivalabs.in", "Sample content", user.getId());
+        PostDTO post = postService.createPost(request);
+        given().contentType("application/json")
+                .header(properties.getJwt().getHeader(), "Bearer " + jwtToken)
+                .delete("/api/posts/{id}", post.getId())
+                .then()
+                .statusCode(200);
+    }
+
+    @Test
+    void shouldGetNotFoundWhenPostIdNotExistToDelete() {
+        String jwtToken = this.getAuthToken(ADMIN_EMAIL, ADMIN_PASSWORD);
+        given().contentType("application/json")
+                .header(properties.getJwt().getHeader(), "Bearer " + jwtToken)
+                .delete("/api/posts/{id}", 9999)
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    void adminShouldBeAbleToDeletePostCreatedByOtherUsers() {
+        User user = userService.getUserByEmail(NORMAL_USER_EMAIL).orElseThrow();
+        String jwtToken = tokenHelper.generateToken(ADMIN_EMAIL);
+        var request = new CreatePostRequest("Sample title", "https://sivalabs.in", "Sample content", user.getId());
+        PostDTO post = postService.createPost(request);
+        given().contentType("application/json")
+                .header(properties.getJwt().getHeader(), "Bearer " + jwtToken)
+                .delete("/api/posts/{id}", post.getId())
+                .then()
+                .statusCode(200);
+    }
+
+    @Test
+    void normalUserShouldNotBeAbleToDeletePostCreatedByOtherUsers() {
+        User user = userService.getUserByEmail(ADMIN_EMAIL).orElseThrow();
+        String jwtToken = tokenHelper.generateToken(NORMAL_USER_EMAIL);
+        var request = new CreatePostRequest("Sample title", "https://sivalabs.in", "Sample content", user.getId());
+        PostDTO post = postService.createPost(request);
+        given().contentType("application/json")
+                .header(properties.getJwt().getHeader(), "Bearer " + jwtToken)
+                .delete("/api/posts/{id}", post.getId())
+                .then()
+                .statusCode(403);
     }
 }

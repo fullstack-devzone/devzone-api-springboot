@@ -2,18 +2,13 @@ package com.sivalabs.devzone.posts.repositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.sivalabs.devzone.common.AbstractRepositoryTest;
 import com.sivalabs.devzone.posts.entities.Post;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-@DataJpaTest(
-        properties = {
-            "spring.test.database.replace=none",
-            "spring.datasource.url=jdbc:tc:postgresql:15.3-alpine:///testdb"
-        })
-class PostRepositoryTests {
+class PostRepositoryTests extends AbstractRepositoryTest {
 
     @Autowired
     private PostRepository postRepository;

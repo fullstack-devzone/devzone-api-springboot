@@ -1,5 +1,7 @@
 package com.sivalabs.devzone.common;
 
+import static com.sivalabs.devzone.common.TestConstants.POSTGRES_IMAGE;
+
 import org.springframework.boot.devtools.restart.RestartScope;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -13,6 +15,6 @@ public class TestcontainersConfig {
     @ServiceConnection
     @RestartScope
     PostgreSQLContainer<?> postgreSQLContainer() {
-        return new PostgreSQLContainer<>("postgres:15.3-alpine");
+        return new PostgreSQLContainer<>(POSTGRES_IMAGE);
     }
 }

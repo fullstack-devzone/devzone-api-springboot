@@ -3,12 +3,12 @@ package com.sivalabs.devzone.posts.web.controllers;
 import com.sivalabs.devzone.common.annotations.AnyAuthenticatedUser;
 import com.sivalabs.devzone.common.annotations.CurrentUser;
 import com.sivalabs.devzone.common.exceptions.ResourceNotFoundException;
+import com.sivalabs.devzone.common.exceptions.UnauthorisedAccessException;
 import com.sivalabs.devzone.common.models.PagedResult;
 import com.sivalabs.devzone.posts.models.CreatePostRequest;
 import com.sivalabs.devzone.posts.models.PostDTO;
 import com.sivalabs.devzone.posts.services.PostService;
 import com.sivalabs.devzone.users.entities.User;
-import com.sivalabs.devzone.users.services.SecurityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class PostController {
     private final PostService postService;
-    private final SecurityService securityService;
 
     @GetMapping
     public PagedResult<PostDTO> getPosts(
@@ -58,7 +57,7 @@ public class PostController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @AnyAuthenticatedUser
-    // @Operation(summary = "Create Post", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Create Post", security = @SecurityRequirement(name = "bearerAuth"))
     public PostDTO createPost(@Valid @RequestBody CreatePostRequest createPostRequest, @CurrentUser User loginUser) {
         CreatePostRequest request = new CreatePostRequest(
                 createPostRequest.title(), createPostRequest.url(), createPostRequest.content(), loginUser.getId());
@@ -76,8 +75,8 @@ public class PostController {
     }
 
     private void checkPrivilege(PostDTO post, User loginUser) {
-        if (!(post.getCreatedBy().getId().equals(loginUser.getId()) || securityService.isCurrentUserAdmin())) {
-            throw new ResourceNotFoundException("Post not found with id=" + post.getId());
+        if (!(post.getCreatedBy().getId().equals(loginUser.getId()) || loginUser.isCurrentUserAdmin())) {
+            throw new UnauthorisedAccessException("Unauthorised Access");
         }
     }
 }

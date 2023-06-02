@@ -2,11 +2,11 @@ package com.sivalabs.devzone.users.web.controllers;
 
 import com.sivalabs.devzone.config.ApplicationProperties;
 import com.sivalabs.devzone.config.security.SecurityUser;
-import com.sivalabs.devzone.config.security.SecurityUserDetailsService;
 import com.sivalabs.devzone.config.security.TokenHelper;
 import com.sivalabs.devzone.users.models.AuthUserDTO;
 import com.sivalabs.devzone.users.models.AuthenticationRequest;
 import com.sivalabs.devzone.users.models.AuthenticationResponse;
+import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,13 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final AuthenticationManager authenticationManager;
-    private final SecurityUserDetailsService userDetailsService;
     private final TokenHelper tokenHelper;
     private final ApplicationProperties applicationProperties;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> createAuthenticationToken(
-            @RequestBody AuthenticationRequest credentials) {
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody @Valid AuthenticationRequest credentials) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(credentials.username(), credentials.password()));

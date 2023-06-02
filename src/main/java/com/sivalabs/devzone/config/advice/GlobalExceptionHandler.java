@@ -1,12 +1,14 @@
 package com.sivalabs.devzone.config.advice;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 import com.sivalabs.devzone.common.exceptions.BadRequestException;
 import com.sivalabs.devzone.common.exceptions.DevZoneException;
 import com.sivalabs.devzone.common.exceptions.ResourceNotFoundException;
+import com.sivalabs.devzone.common.exceptions.UnauthorisedAccessException;
 import java.net.URI;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ProblemDetail;
@@ -41,6 +43,15 @@ class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(BAD_REQUEST, e.getMessage());
         problemDetail.setTitle("Unknown Problem");
         problemDetail.setType(URI.create("https://api.devzone.com/errors/badrequest"));
+        return problemDetail;
+    }
+
+    @ExceptionHandler(UnauthorisedAccessException.class)
+    ProblemDetail handleUnauthorisedAccessException(UnauthorisedAccessException e) {
+        log.error(e.getLocalizedMessage(), e);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(FORBIDDEN, e.getMessage());
+        problemDetail.setTitle("Forbidden");
+        problemDetail.setType(URI.create("https://api.devzone.com/errors/forbidden"));
         return problemDetail;
     }
 }

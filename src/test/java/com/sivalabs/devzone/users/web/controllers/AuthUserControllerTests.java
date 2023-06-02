@@ -1,5 +1,6 @@
 package com.sivalabs.devzone.users.web.controllers;
 
+import static com.sivalabs.devzone.common.TestConstants.ADMIN_EMAIL;
 import static io.restassured.RestAssured.given;
 
 import com.sivalabs.devzone.common.AbstractIntegrationTest;
@@ -14,7 +15,7 @@ class AuthUserControllerTests extends AbstractIntegrationTest {
 
     @Test
     void shouldGetLoginUserDetails() {
-        String jwtToken = tokenHelper.generateToken("admin@gmail.com");
+        String jwtToken = tokenHelper.generateToken(ADMIN_EMAIL);
         given().header(properties.getJwt().getHeader(), "Bearer " + jwtToken)
                 .get("/api/me")
                 .then()
