@@ -1,6 +1,5 @@
 package com.sivalabs.devzone.users.web.controllers;
 
-import com.sivalabs.devzone.common.annotations.AnyAuthenticatedUser;
 import com.sivalabs.devzone.config.ApplicationProperties;
 import com.sivalabs.devzone.config.security.SecurityUser;
 import com.sivalabs.devzone.config.security.SecurityUserDetailsService;
@@ -8,9 +7,6 @@ import com.sivalabs.devzone.config.security.TokenHelper;
 import com.sivalabs.devzone.users.models.AuthUserDTO;
 import com.sivalabs.devzone.users.models.AuthenticationRequest;
 import com.sivalabs.devzone.users.models.AuthenticationResponse;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -48,23 +44,6 @@ public class AuthenticationController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-    }
-
-    @PostMapping("/refresh")
-    @AnyAuthenticatedUser
-    @Operation(summary = "Refresh Auth Token", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<AuthenticationResponse> refreshAuthenticationToken(HttpServletRequest request) {
-        String authToken = tokenHelper.getToken(request);
-        if (authToken != null) {
-            String email = tokenHelper.getUsernameFromToken(authToken);
-            SecurityUser user = (SecurityUser) userDetailsService.loadUserByUsername(email);
-            Boolean validToken = tokenHelper.validateToken(authToken, user);
-            if (validToken) {
-                String refreshedToken = tokenHelper.refreshToken(authToken);
-                return ResponseEntity.ok(getAuthenticationResponse(user, refreshedToken));
-            }
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     private AuthenticationResponse getAuthenticationResponse(SecurityUser user, String token) {

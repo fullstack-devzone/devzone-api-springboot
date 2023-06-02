@@ -3,7 +3,6 @@ package com.sivalabs.devzone.users.web.controllers;
 import static io.restassured.RestAssured.given;
 
 import com.sivalabs.devzone.common.AbstractIntegrationTest;
-import com.sivalabs.devzone.config.security.TokenHelper;
 import com.sivalabs.devzone.users.entities.User;
 import com.sivalabs.devzone.users.models.AuthenticationRequest;
 import com.sivalabs.devzone.users.models.CreateUserRequest;
@@ -18,9 +17,6 @@ class AuthenticationControllerTests extends AbstractIntegrationTest {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private TokenHelper tokenHelper;
 
     @Test
     void shouldLoginSuccessfullyWithValidCredentials() {
@@ -43,31 +39,6 @@ class AuthenticationControllerTests extends AbstractIntegrationTest {
                 .post("/api/login")
                 .then()
                 .statusCode(401);
-    }
-
-    @Test
-    void shouldGetRefreshedAuthTokenIfAuthorized() {
-        String token = tokenHelper.generateToken("siva@gmail.com");
-
-        given().contentType(ContentType.JSON)
-                .header(properties.getJwt().getHeader(), "Bearer " + token)
-                .post("/api/refresh")
-                .then()
-                .statusCode(200);
-    }
-
-    @Test
-    void shouldFailToGetRefreshedAuthTokenIfUnauthorized() {
-        given().contentType(ContentType.JSON).post("/api/refresh").then().statusCode(403);
-    }
-
-    @Test
-    void shouldFailToGetRefreshedAuthTokenIfTokenIsInvalid() {
-        given().contentType(ContentType.JSON)
-                .header(properties.getJwt().getHeader(), "Bearer invalid-token")
-                .post("/api/refresh")
-                .then()
-                .statusCode(403);
     }
 
     private User createUser() {
