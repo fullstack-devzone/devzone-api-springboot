@@ -43,8 +43,6 @@ public class PostService {
         Pageable pageable = PageRequest.of(page < 1 ? 0 : page - 1, PAGE_SIZE, DESC, "createdAt");
         Page<PostDTO> pageOfPosts =
                 postRepository.searchByTitle("%" + query + "%", pageable).map(PostDTO::from);
-        // Page<PostDTO> pageOfPosts = postRepository.findByTitleContainingIgnoreCase(query,
-        // pageable).map(PostDTO::from);
         return new PagedResult<>(
                 pageOfPosts.getContent(),
                 pageOfPosts.getTotalElements(),
