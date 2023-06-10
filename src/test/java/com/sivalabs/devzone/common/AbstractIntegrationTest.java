@@ -4,9 +4,9 @@ import static io.restassured.RestAssured.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sivalabs.devzone.application.port.in.LoginRequest;
+import com.sivalabs.devzone.application.port.in.LoginResponse;
 import com.sivalabs.devzone.config.ApplicationProperties;
-import com.sivalabs.devzone.users.models.AuthenticationRequest;
-import com.sivalabs.devzone.users.models.AuthenticationResponse;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,14 +36,14 @@ public abstract class AbstractIntegrationTest {
     }
 
     protected String getAuthToken(String email, String password) {
-        AuthenticationRequest authenticationRequestDTO = new AuthenticationRequest(email, password);
-        AuthenticationResponse response = given().contentType(ContentType.JSON)
+        LoginRequest authenticationRequestDTO = new LoginRequest(email, password);
+        LoginResponse response = given().contentType(ContentType.JSON)
                 .body(authenticationRequestDTO)
                 .post("/api/login")
                 .then()
                 .statusCode(200)
                 .extract()
-                .as(AuthenticationResponse.class);
+                .as(LoginResponse.class);
         return response.accessToken();
     }
 }

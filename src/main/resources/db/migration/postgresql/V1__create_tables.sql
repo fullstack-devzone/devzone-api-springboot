@@ -1,5 +1,5 @@
-create sequence user_id_seq start with 1 increment by 100;
-create sequence post_id_seq start with 1 increment by 100;
+create sequence user_id_seq start with 1 increment by 50;
+create sequence post_id_seq start with 1 increment by 50;
 
 create table users (
     id bigint DEFAULT nextval('user_id_seq') not null,
