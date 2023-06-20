@@ -89,7 +89,7 @@ spotless {
     }
 }
 
-test {
+tasks.named("test", Test) {
     useJUnitPlatform()
     testLogging {
         events = ["PASSED", "FAILED", "SKIPPED"]
