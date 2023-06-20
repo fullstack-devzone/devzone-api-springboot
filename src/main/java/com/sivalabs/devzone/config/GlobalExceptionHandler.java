@@ -1,4 +1,4 @@
-package com.sivalabs.devzone.config.advice;
+package com.sivalabs.devzone.config;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;

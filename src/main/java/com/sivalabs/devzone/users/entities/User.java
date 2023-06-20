@@ -47,7 +47,7 @@ public class User implements Serializable {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private RoleEnum role;
+    private Role role;
 
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -66,10 +66,10 @@ public class User implements Serializable {
     }
 
     public boolean isCurrentUserAdmin() {
-        return isUserHasAnyRole(RoleEnum.ROLE_ADMIN);
+        return isUserHasAnyRole(Role.ROLE_ADMIN);
     }
 
-    public boolean isUserHasAnyRole(RoleEnum... roles) {
+    public boolean isUserHasAnyRole(Role... roles) {
         return Arrays.asList(roles).contains(this.getRole());
     }
 }

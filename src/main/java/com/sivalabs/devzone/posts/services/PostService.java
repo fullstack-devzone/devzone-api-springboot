@@ -32,10 +32,7 @@ public class PostService {
         Pageable pageable = PageRequest.of(page < 1 ? 0 : page - 1, PAGE_SIZE, DESC, "createdAt");
         Page<PostDTO> pageOfPosts = postRepository.findAll(pageable).map(PostDTO::from);
         return new PagedResult<>(
-                pageOfPosts.getContent(),
-                pageOfPosts.getTotalElements(),
-                pageOfPosts.getNumber(),
-                pageOfPosts.getTotalPages());
+                pageOfPosts.getContent(), pageOfPosts.getTotalElements(), page, pageOfPosts.getTotalPages());
     }
 
     @Transactional(readOnly = true)
@@ -44,10 +41,7 @@ public class PostService {
         Page<PostDTO> pageOfPosts =
                 postRepository.searchByTitle("%" + query + "%", pageable).map(PostDTO::from);
         return new PagedResult<>(
-                pageOfPosts.getContent(),
-                pageOfPosts.getTotalElements(),
-                pageOfPosts.getNumber(),
-                pageOfPosts.getTotalPages());
+                pageOfPosts.getContent(), pageOfPosts.getTotalElements(), page, pageOfPosts.getTotalPages());
     }
 
     @Transactional(readOnly = true)

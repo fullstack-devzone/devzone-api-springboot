@@ -75,7 +75,7 @@ public class TokenHelper {
     public String getToken(HttpServletRequest request) {
         String authHeader = request.getHeader(applicationProperties.getJwt().getHeader());
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            return authHeader.substring(7);
+            return authHeader.substring("Bearer ".length());
         }
         return null;
     }

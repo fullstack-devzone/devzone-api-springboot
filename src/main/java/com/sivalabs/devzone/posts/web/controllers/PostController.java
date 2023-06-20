@@ -1,7 +1,5 @@
 package com.sivalabs.devzone.posts.web.controllers;
 
-import com.sivalabs.devzone.common.annotations.AnyAuthenticatedUser;
-import com.sivalabs.devzone.common.annotations.CurrentUser;
 import com.sivalabs.devzone.common.exceptions.ResourceNotFoundException;
 import com.sivalabs.devzone.common.exceptions.UnauthorisedAccessException;
 import com.sivalabs.devzone.common.models.PagedResult;
@@ -9,6 +7,7 @@ import com.sivalabs.devzone.posts.models.CreatePostRequest;
 import com.sivalabs.devzone.posts.models.PostDTO;
 import com.sivalabs.devzone.posts.services.PostService;
 import com.sivalabs.devzone.users.entities.User;
+import com.sivalabs.devzone.users.services.SecurityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -17,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class PostController {
     private final PostService postService;
+    private final SecurityService securityService;
 
     @GetMapping
     public PagedResult<PostDTO> getPosts(
@@ -56,18 +57,20 @@ public class PostController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @AnyAuthenticatedUser
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Create Post", security = @SecurityRequirement(name = "bearerAuth"))
-    public PostDTO createPost(@Valid @RequestBody CreatePostRequest createPostRequest, @CurrentUser User loginUser) {
+    public PostDTO createPost(@Valid @RequestBody CreatePostRequest createPostRequest) {
+        User loginUser = securityService.loginUser();
         CreatePostRequest request = new CreatePostRequest(
                 createPostRequest.title(), createPostRequest.url(), createPostRequest.content(), loginUser.getId());
         return postService.createPost(request);
     }
 
     @DeleteMapping("/{id}")
-    @AnyAuthenticatedUser
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Delete Post", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<Void> deletePost(@PathVariable Long id, @CurrentUser User loginUser) {
+    public ResponseEntity<Void> deletePost(@PathVariable Long id) {
+        User loginUser = securityService.loginUser();
         PostDTO post = postService.getPostById(id).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         this.checkPrivilege(post, loginUser);
         postService.deletePost(id);

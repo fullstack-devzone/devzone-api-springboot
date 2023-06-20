@@ -1,7 +1,7 @@
 package com.sivalabs.devzone.users.services;
 
 import com.sivalabs.devzone.common.exceptions.BadRequestException;
-import com.sivalabs.devzone.users.entities.RoleEnum;
+import com.sivalabs.devzone.users.entities.Role;
 import com.sivalabs.devzone.users.entities.User;
 import com.sivalabs.devzone.users.models.CreateUserRequest;
 import com.sivalabs.devzone.users.models.UserDTO;
@@ -39,7 +39,7 @@ public class UserService {
         user.setName(createUserRequest.name());
         user.setEmail(createUserRequest.email());
         user.setPassword(passwordEncoder.encode(createUserRequest.password()));
-        user.setRole(RoleEnum.ROLE_USER);
+        user.setRole(Role.ROLE_USER);
         return UserDTO.fromEntity(userRepository.save(user));
     }
 }

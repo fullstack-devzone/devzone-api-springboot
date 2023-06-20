@@ -2,7 +2,6 @@ package com.sivalabs.devzone.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sivalabs.devzone.config.security.SecurityConfig;
-import com.sivalabs.devzone.config.security.SecurityUtils;
 import com.sivalabs.devzone.config.security.TokenHelper;
 import com.sivalabs.devzone.config.security.WebSecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +23,6 @@ public abstract class AbstractWebMvcTest {
 
     @MockBean
     protected TokenHelper tokenHelper;
-
-    @MockBean
-    protected SecurityUtils securityUtils;
 
     @MockBean
     protected PasswordEncoder passwordEncoder;
