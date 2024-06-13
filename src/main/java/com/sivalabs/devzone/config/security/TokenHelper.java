@@ -4,7 +4,6 @@ import com.sivalabs.devzone.common.exceptions.DevZoneException;
 import com.sivalabs.devzone.config.ApplicationProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
@@ -19,10 +18,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Slf4j
 public class TokenHelper {
-    private static final SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS256;
-    private static final String AUDIENCE_WEB = "web";
 
-    private final ApplicationProperties applicationProperties;
+    private final ApplicationProperties properties;
 
     public String getUsernameFromToken(String token) {
         try {
@@ -35,36 +32,34 @@ public class TokenHelper {
     }
 
     public String generateToken(String username) {
-        String secretString = applicationProperties.getJwt().getSecret();
+        String secretString = properties.getJwt().getSecret();
         SecretKey key = Keys.hmacShaKeyFor(secretString.getBytes(StandardCharsets.UTF_8));
         return Jwts.builder()
-                .setIssuer(applicationProperties.getJwt().getIssuer())
-                .setSubject(username)
-                .setAudience(AUDIENCE_WEB)
-                .setIssuedAt(new Date())
-                .setExpiration(generateExpirationDate())
-                .signWith(key, SIGNATURE_ALGORITHM)
+                .issuer(properties.getJwt().getIssuer())
+                .subject(username)
+                .issuedAt(new Date())
+                .expiration(generateExpirationDate())
+                .signWith(key)
                 .compact();
     }
 
     private Claims getAllClaimsFromToken(String token) {
         try {
-            String secretString = applicationProperties.getJwt().getSecret();
+            String secretString = properties.getJwt().getSecret();
             SecretKey key = Keys.hmacShaKeyFor(secretString.getBytes(StandardCharsets.UTF_8));
 
-            return Jwts.parserBuilder()
-                    .setSigningKey(key)
+            return Jwts.parser()
+                    .verifyWith(key)
                     .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+                    .parseSignedClaims(token)
+                    .getPayload();
         } catch (Exception e) {
             throw new DevZoneException(e);
         }
     }
 
     private Date generateExpirationDate() {
-        return new Date(
-                System.currentTimeMillis() + applicationProperties.getJwt().getExpiresIn() * 1000);
+        return new Date(System.currentTimeMillis() + properties.getJwt().getExpiresIn() * 1000);
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
@@ -73,7 +68,7 @@ public class TokenHelper {
     }
 
     public String getToken(HttpServletRequest request) {
-        String authHeader = request.getHeader(applicationProperties.getJwt().getHeader());
+        String authHeader = request.getHeader(properties.getJwt().getHeader());
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             return authHeader.substring("Bearer ".length());
         }
