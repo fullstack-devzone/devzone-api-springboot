@@ -1,4 +1,4 @@
-name: Build
+name: Gradle Build
 
 on:
   push:
@@ -6,20 +6,16 @@ on:
       - 'main'
 jobs:
   build:
-    name: Gradle Build
+    name: Build and Test
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        distribution: [ 'temurin' ]
-        java: [ '17' ]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Setup Java ${{ matrix.java }} (${{ matrix.distribution }})
-        uses: actions/setup-java@v3
+      - name: Setup Java
+        uses: actions/setup-java@v4
         with:
-          java-version: ${{ matrix.java }}
-          distribution: ${{ matrix.distribution }}
+          java-version: '21'
+          distribution: 'temurin'
           cache: 'gradle'
 
       - name: Build with Gradle
