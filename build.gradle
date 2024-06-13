@@ -29,7 +29,7 @@ ext {
     set("commons_io_version", "2.16.1")
     set("opencsv_version", "5.9")
     set("jjwt_version", "0.12.5")
-    set("instancio_version", "3.7.1")
+    set("instancio_version", "4.7.0")
 }
 
 dependencies {
