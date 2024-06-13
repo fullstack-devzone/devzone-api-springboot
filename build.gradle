@@ -1,9 +1,9 @@
 plugins {
     id "java"
-    id "org.springframework.boot" version "3.1.2"
-    id "io.spring.dependency-management" version "1.1.3"
-    id "com.gorylenko.gradle-git-properties" version "2.4.1"
-    id "com.diffplug.spotless" version "6.20.0"
+    id "org.springframework.boot" version "3.3.0"
+    id "io.spring.dependency-management" version "1.1.5"
+    id "com.gorylenko.gradle-git-properties" version "2.4.2"
+    id "com.diffplug.spotless" version "6.25.0"
 }
 
 group = "com.sivalabs"
@@ -11,8 +11,7 @@ version = "0.0.1-SNAPSHOT"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-        vendor = JvmVendorSpec.ADOPTIUM
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
@@ -26,12 +25,11 @@ repositories {
     mavenCentral()
 }
 ext {
-    set("springdoc_openapi_version", "1.7.0")
-    set("commons_lang_version", "3.13.0")
-    set("commons_io_version", "2.13.0")
-    set("opencsv_version", "5.8")
+    set("springdoc_version", "2.5.0")
+    set("commons_io_version", "2.16.1")
+    set("opencsv_version", "5.9")
     set("jjwt_version", "0.11.5")
-    set("instancio_version", "3.1.0")
+    set("instancio_version", "3.7.1")
 }
 
 dependencies {
@@ -46,6 +44,7 @@ dependencies {
     implementation "io.jsonwebtoken:jjwt-jackson:${jjwt_version}"
 
     implementation "org.flywaydb:flyway-core"
+    implementation "org.flywaydb:flyway-database-postgresql"
     compileOnly "org.projectlombok:lombok"
     testImplementation "org.projectlombok:lombok"
     testImplementation "org.springframework.boot:spring-boot-devtools"
@@ -53,12 +52,14 @@ dependencies {
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
     annotationProcessor "org.projectlombok:lombok"
 
-    implementation "org.springdoc:springdoc-openapi-ui:${springdoc_openapi_version}"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdoc_version}"
     implementation "com.opencsv:opencsv:${opencsv_version}"
-    implementation "org.apache.commons:commons-lang3:${commons_lang_version}"
+    implementation "org.apache.commons:commons-lang3"
     implementation "commons-io:commons-io:${commons_io_version}"
 
+    developmentOnly "org.springframework.boot:spring-boot-docker-compose"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
     testImplementation "org.springframework.boot:spring-boot-testcontainers"
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.testcontainers:junit-jupiter"
@@ -84,7 +85,7 @@ spotless {
     java {
         importOrder()
         removeUnusedImports()
-        palantirJavaFormat("2.30.0")
+        palantirJavaFormat("2.39.0")
         formatAnnotations()
     }
 }
