@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class PostController {
     private final PostService postService;
-    private final SecurityService securityService;
 
     @GetMapping
     public PagedResult<PostDTO> getPosts(
@@ -60,9 +59,9 @@ public class PostController {
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Create Post", security = @SecurityRequirement(name = "bearerAuth"))
     public PostDTO createPost(@Valid @RequestBody CreatePostRequest createPostRequest) {
-        User loginUser = securityService.loginUser();
+        Long loginUserId = SecurityService.loginUserId();
         CreatePostRequest request = new CreatePostRequest(
-                createPostRequest.title(), createPostRequest.url(), createPostRequest.content(), loginUser.getId());
+                createPostRequest.title(), createPostRequest.url(), createPostRequest.content(), loginUserId);
         return postService.createPost(request);
     }
 
@@ -70,7 +69,7 @@ public class PostController {
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Delete Post", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<Void> deletePost(@PathVariable Long id) {
-        User loginUser = securityService.loginUser();
+        User loginUser = SecurityService.getCurrentUserOrThrow();
         PostDTO post = postService.getPostById(id).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         this.checkPrivilege(post, loginUser);
         postService.deletePost(id);
@@ -78,7 +77,7 @@ public class PostController {
     }
 
     private void checkPrivilege(PostDTO post, User loginUser) {
-        if (!(post.getCreatedBy().getId().equals(loginUser.getId()) || loginUser.isCurrentUserAdmin())) {
+        if (!(post.getCreatedBy().getId().equals(loginUser.getId()) || loginUser.isAdmin())) {
             throw new UnauthorisedAccessException("Unauthorised Access");
         }
     }

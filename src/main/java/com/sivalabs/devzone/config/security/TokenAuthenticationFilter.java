@@ -17,7 +17,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
 
     public TokenAuthenticationFilter(TokenHelper tokenHelper, UserDetailsService userDetailsService) {
-        super();
         this.tokenHelper = tokenHelper;
         this.userDetailsService = userDetailsService;
     }

@@ -19,16 +19,16 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @SecurityRequirement(name = "bearerAuth")
 public class AuthUserController {
-    private final SecurityService securityService;
 
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<AuthUserDTO> me() {
-        User loginUser = securityService.loginUser();
-        if (loginUser != null) {
+        try {
+            User loginUser = SecurityService.getCurrentUserOrThrow();
             AuthUserDTO userDTO = new AuthUserDTO(loginUser.getName(), loginUser.getEmail(), loginUser.getRole());
             return ResponseEntity.ok(userDTO);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }

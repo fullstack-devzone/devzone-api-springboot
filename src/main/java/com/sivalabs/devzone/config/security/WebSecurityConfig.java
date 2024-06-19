@@ -1,5 +1,9 @@
 package com.sivalabs.devzone.config.security;
 
+import static com.sivalabs.devzone.users.entities.Role.ROLE_ADMIN;
+import static com.sivalabs.devzone.users.entities.Role.ROLE_MODERATOR;
+import static com.sivalabs.devzone.users.entities.Role.ROLE_USER;
+
 import com.sivalabs.devzone.users.entities.Role;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,17 +26,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
-    private final TokenAuthenticationFilter tokenAuthenticationFilter;
+    private final TokenAuthenticationFilter tokenAuthFilter;
 
     @Bean
-    public RoleHierarchy roleHierarchy() {
-        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-        roleHierarchy.setHierarchy(this.getRoleHierarchy());
-        return roleHierarchy;
+    RoleHierarchy roleHierarchy() {
+        List<Role> hierarchy = List.of(ROLE_ADMIN, ROLE_MODERATOR, ROLE_USER);
+        String hierarchyStr = hierarchy.stream().map(Role::name).collect(Collectors.joining(" > "));
+        return RoleHierarchyImpl.fromHierarchy(hierarchyStr);
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(CsrfConfigurer::disable);
         http.cors(CorsConfigurer::disable);
 
@@ -44,13 +48,8 @@ public class WebSecurityConfig {
 
         http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        http.addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(tokenAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
-
-    private String getRoleHierarchy() {
-        List<Role> hierarchy = List.of(Role.ROLE_ADMIN, Role.ROLE_MODERATOR, Role.ROLE_USER);
-        return hierarchy.stream().map(Role::name).collect(Collectors.joining(" > "));
     }
 }

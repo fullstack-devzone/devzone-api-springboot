@@ -1,16 +1,19 @@
 package com.sivalabs.devzone.config;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 import com.sivalabs.devzone.common.exceptions.BadRequestException;
 import com.sivalabs.devzone.common.exceptions.DevZoneException;
+import com.sivalabs.devzone.common.exceptions.ResourceAlreadyExistsException;
 import com.sivalabs.devzone.common.exceptions.ResourceNotFoundException;
 import com.sivalabs.devzone.common.exceptions.UnauthorisedAccessException;
-import java.net.URI;
+import java.time.Instant;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -21,37 +24,34 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    ProblemDetail handleResourceNotFoundException(ResourceNotFoundException e) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(NOT_FOUND, e.getMessage());
-        problemDetail.setTitle("Resource Not Found");
-        problemDetail.setType(URI.create("https://api.devzone.com/errors/not-found"));
-        return problemDetail;
+    ProblemDetail handle(ResourceNotFoundException e) {
+        return createProblemDetail(NOT_FOUND, "Resource Not Found", e.getMessage());
     }
 
-    @ExceptionHandler(DevZoneException.class)
-    ProblemDetail handleDevZoneException(DevZoneException e) {
-        log.error(e.getLocalizedMessage(), e);
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(INTERNAL_SERVER_ERROR, e.getMessage());
-        problemDetail.setTitle("Unknown Problem");
-        problemDetail.setType(URI.create("https://api.devzone.com/errors/unknown"));
-        return problemDetail;
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    ProblemDetail handle(ResourceAlreadyExistsException e) {
+        return createProblemDetail(CONFLICT, "Resource Already Exists", e.getMessage());
     }
 
     @ExceptionHandler(BadRequestException.class)
-    ProblemDetail handleBadRequestException(BadRequestException e) {
-        log.error(e.getLocalizedMessage(), e);
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(BAD_REQUEST, e.getMessage());
-        problemDetail.setTitle("Unknown Problem");
-        problemDetail.setType(URI.create("https://api.devzone.com/errors/badrequest"));
-        return problemDetail;
+    ProblemDetail handle(BadRequestException e) {
+        return createProblemDetail(BAD_REQUEST, "Bad Request", e.getMessage());
     }
 
     @ExceptionHandler(UnauthorisedAccessException.class)
-    ProblemDetail handleUnauthorisedAccessException(UnauthorisedAccessException e) {
-        log.error(e.getLocalizedMessage(), e);
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(FORBIDDEN, e.getMessage());
-        problemDetail.setTitle("Forbidden");
-        problemDetail.setType(URI.create("https://api.devzone.com/errors/forbidden"));
+    ProblemDetail handle(UnauthorisedAccessException e) {
+        return createProblemDetail(FORBIDDEN, "Forbidden", e.getMessage());
+    }
+
+    @ExceptionHandler(DevZoneException.class)
+    ProblemDetail handleGenericException(DevZoneException e) {
+        return createProblemDetail(INTERNAL_SERVER_ERROR, "Internal Server Error", e.getMessage());
+    }
+
+    private ProblemDetail createProblemDetail(HttpStatus status, String title, String detail) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
+        problemDetail.setTitle(title);
+        problemDetail.setProperty("timestamp", Instant.now());
         return problemDetail;
     }
 }

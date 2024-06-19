@@ -65,11 +65,11 @@ public class User implements Serializable {
         updatedAt = LocalDateTime.now();
     }
 
-    public boolean isCurrentUserAdmin() {
-        return isUserHasAnyRole(Role.ROLE_ADMIN);
+    public boolean isAdmin() {
+        return hasAnyRole(Role.ROLE_ADMIN);
     }
 
-    public boolean isUserHasAnyRole(Role... roles) {
+    public boolean hasAnyRole(Role... roles) {
         return Arrays.asList(roles).contains(this.getRole());
     }
 }

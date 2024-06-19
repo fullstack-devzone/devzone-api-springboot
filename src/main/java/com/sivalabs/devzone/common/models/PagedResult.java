@@ -1,6 +1,5 @@
 package com.sivalabs.devzone.common.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 public record PagedResult<T>(
@@ -8,10 +7,10 @@ public record PagedResult<T>(
         long totalElements,
         int pageNumber,
         int totalPages,
-        @JsonProperty("isFirst") boolean isFirst,
-        @JsonProperty("isLast") boolean isLast,
-        @JsonProperty("hasNext") boolean hasNext,
-        @JsonProperty("hasPrevious") boolean hasPrevious) {
+        boolean isFirst,
+        boolean isLast,
+        boolean hasNext,
+        boolean hasPrevious) {
 
     public PagedResult(List<T> data, long totalElements, int pageNumber, int totalPages) {
         this(
