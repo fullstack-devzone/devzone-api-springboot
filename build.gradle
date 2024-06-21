@@ -28,7 +28,7 @@ ext {
     set("springdoc_version", "2.5.0")
     set("commons_io_version", "2.16.1")
     set("opencsv_version", "5.9")
-    set("jjwt_version", "0.12.5")
+    set("jjwt_version", "0.12.6")
     set("instancio_version", "4.7.0")
 }
 
