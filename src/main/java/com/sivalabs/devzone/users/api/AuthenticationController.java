@@ -23,13 +23,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-public class AuthenticationController {
+class AuthenticationController {
     private final AuthenticationManager authenticationManager;
     private final TokenHelper tokenHelper;
     private final ApplicationProperties applicationProperties;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest credentials) {
+    ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest credentials) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(credentials.username(), credentials.password()));

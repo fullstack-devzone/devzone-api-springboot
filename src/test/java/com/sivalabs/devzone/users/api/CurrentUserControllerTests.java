@@ -8,7 +8,7 @@ import com.sivalabs.devzone.security.TokenHelper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class AuthUserControllerTests extends BaseIT {
+class CurrentUserControllerTests extends BaseIT {
 
     @Autowired
     private TokenHelper tokenHelper;

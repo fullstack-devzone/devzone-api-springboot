@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Slf4j
 @SecurityRequirement(name = "bearerAuth")
-public class AuthUserController {
+class CurrentUserController {
 
     @GetMapping("/me")
-    public ResponseEntity<AuthUserDTO> me() {
+    ResponseEntity<AuthUserDTO> me() {
         try {
             User loginUser = SecurityService.getCurrentUserOrThrow();
             AuthUserDTO userDTO = new AuthUserDTO(loginUser.getName(), loginUser.getEmail(), loginUser.getRole());

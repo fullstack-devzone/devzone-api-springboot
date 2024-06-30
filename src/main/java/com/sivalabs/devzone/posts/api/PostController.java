@@ -30,11 +30,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
 @Slf4j
-public class PostController {
+class PostController {
     private final PostService postService;
 
     @GetMapping
-    public PagedResult<PostDTO> getPosts(
+    PagedResult<PostDTO> getPosts(
             @RequestParam(name = "query", defaultValue = "") String query,
             @RequestParam(name = "page", defaultValue = "1") Integer page) {
         if (StringUtils.isNotEmpty(query)) {
@@ -47,7 +47,7 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public PostDTO getPost(@PathVariable Long id) {
+    PostDTO getPost(@PathVariable Long id) {
         return postService
                 .getPostById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post with id: " + id + " not found"));
@@ -56,7 +56,7 @@ public class PostController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create Post", security = @SecurityRequirement(name = "bearerAuth"))
-    public PostDTO createPost(@Valid @RequestBody CreatePostRequest createPostRequest) {
+    PostDTO createPost(@Valid @RequestBody CreatePostRequest createPostRequest) {
         Long loginUserId = SecurityService.loginUserId();
         CreatePostRequest request = new CreatePostRequest(
                 createPostRequest.title(), createPostRequest.url(), createPostRequest.content(), loginUserId);
@@ -65,7 +65,7 @@ public class PostController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete Post", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<Void> deletePost(@PathVariable Long id) {
+    ResponseEntity<Void> deletePost(@PathVariable Long id) {
         User loginUser = SecurityService.getCurrentUserOrThrow();
         PostDTO post = postService.getPostById(id).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         this.checkPrivilege(post, loginUser);

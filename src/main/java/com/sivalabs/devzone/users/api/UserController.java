@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 @Slf4j
-public class UserController {
+class UserController {
     private final UserService userService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getUser(@PathVariable Long id) {
-        log.info("process=get_user, user_id={}", id);
+    ResponseEntity<UserDTO> getUser(@PathVariable Long id) {
+        log.info("Get user by id={}", id);
         return userService
                 .getUserById(id)
                 .map(ResponseEntity::ok)
@@ -29,8 +29,8 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(CREATED)
-    public UserDTO createUser(@RequestBody @Valid CreateUserRequest createUserRequest) {
-        log.info("process=create_user, user_email={}", createUserRequest.email());
-        return userService.createUser(createUserRequest);
+    UserDTO createUser(@RequestBody @Valid CreateUserRequest request) {
+        log.info("Create user with email={}", request.email());
+        return userService.createUser(request);
     }
 }

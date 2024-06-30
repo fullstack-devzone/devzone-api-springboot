@@ -26,14 +26,14 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public UserDTO createUser(CreateUserRequest createUserRequest) {
-        if (userRepository.existsByEmail(createUserRequest.email())) {
-            throw new BadRequestException("Email " + createUserRequest.email() + " is already in use");
+    public UserDTO createUser(CreateUserRequest request) {
+        if (userRepository.existsByEmail(request.email())) {
+            throw new BadRequestException("Email " + request.email() + " is already in use");
         }
         User user = new User();
-        user.setName(createUserRequest.name());
-        user.setEmail(createUserRequest.email());
-        user.setPassword(passwordEncoder.encode(createUserRequest.password()));
+        user.setName(request.name());
+        user.setEmail(request.email());
+        user.setPassword(passwordEncoder.encode(request.password()));
         user.setRole(Role.ROLE_USER);
         return userRepository.save(user).toDTO();
     }
