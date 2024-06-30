@@ -1,6 +1,5 @@
 package com.sivalabs.devzone;
 
-import com.sivalabs.devzone.common.TestcontainersConfig;
 import org.springframework.boot.SpringApplication;
 
 public class TestApplication {

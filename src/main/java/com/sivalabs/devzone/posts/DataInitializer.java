@@ -1,8 +1,8 @@
 package com.sivalabs.devzone.posts;
 
-import com.sivalabs.devzone.config.ApplicationProperties;
-import com.sivalabs.devzone.posts.services.PostService;
-import com.sivalabs.devzone.posts.services.PostsImportService;
+import com.sivalabs.devzone.ApplicationProperties;
+import com.sivalabs.devzone.posts.domain.PostService;
+import com.sivalabs.devzone.posts.domain.PostsImportService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
