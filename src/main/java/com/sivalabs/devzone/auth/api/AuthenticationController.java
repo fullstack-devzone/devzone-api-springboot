@@ -1,11 +1,11 @@
-package com.sivalabs.devzone.users.api;
+package com.sivalabs.devzone.auth.api;
 
 import com.sivalabs.devzone.ApplicationProperties;
-import com.sivalabs.devzone.security.SecurityUser;
-import com.sivalabs.devzone.security.TokenHelper;
-import com.sivalabs.devzone.users.domain.AuthUserDTO;
+import com.sivalabs.devzone.auth.TokenHelper;
 import com.sivalabs.devzone.users.domain.LoginRequest;
 import com.sivalabs.devzone.users.domain.LoginResponse;
+import com.sivalabs.devzone.users.domain.SecurityUser;
+import com.sivalabs.devzone.users.domain.UserDTO;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -24,33 +24,30 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 class AuthenticationController {
-    private final AuthenticationManager authenticationManager;
+    private final AuthenticationManager authManager;
     private final TokenHelper tokenHelper;
-    private final ApplicationProperties applicationProperties;
+    private final ApplicationProperties properties;
 
     @PostMapping("/login")
     ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest credentials) {
         try {
-            Authentication authentication = authenticationManager.authenticate(
+            Authentication authentication = authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(credentials.username(), credentials.password()));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             SecurityUser user = (SecurityUser) authentication.getPrincipal();
             String accessToken = tokenHelper.generateToken(user.getUsername());
-            return ResponseEntity.ok(getAuthenticationResponse(user, accessToken));
+            return ResponseEntity.ok(getLoginResponse(user, accessToken));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
-    private LoginResponse getAuthenticationResponse(SecurityUser user, String token) {
+    private LoginResponse getLoginResponse(SecurityUser user, String token) {
         return new LoginResponse(
                 token,
-                LocalDateTime.now().plusSeconds(applicationProperties.getJwt().getExpiresIn()),
-                new AuthUserDTO(
-                        user.getUser().getName(),
-                        user.getUser().getEmail(),
-                        user.getUser().getRole()));
+                LocalDateTime.now().plusSeconds(properties.getJwt().getExpiresIn()),
+                new UserDTO(user.getUserId(), user.getName(), user.getUsername(), user.getRole()));
     }
 }

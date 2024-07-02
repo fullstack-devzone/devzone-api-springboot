@@ -4,7 +4,7 @@ import static com.sivalabs.devzone.TestConstants.ADMIN_EMAIL;
 import static io.restassured.RestAssured.given;
 
 import com.sivalabs.devzone.BaseIT;
-import com.sivalabs.devzone.security.TokenHelper;
+import com.sivalabs.devzone.auth.TokenHelper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

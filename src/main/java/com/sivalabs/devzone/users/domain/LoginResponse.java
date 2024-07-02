@@ -6,4 +6,4 @@ import java.time.LocalDateTime;
 public record LoginResponse(
         @JsonProperty("access_token") String accessToken,
         @JsonProperty("expires_at") LocalDateTime expiresAt,
-        @JsonProperty("user") AuthUserDTO user) {}
+        @JsonProperty("user") UserDTO user) {}

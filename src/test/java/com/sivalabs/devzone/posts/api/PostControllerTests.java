@@ -10,11 +10,11 @@ import static org.hamcrest.Matchers.is;
 
 import com.opencsv.exceptions.CsvValidationException;
 import com.sivalabs.devzone.BaseIT;
-import com.sivalabs.devzone.posts.domain.CreatePostRequest;
+import com.sivalabs.devzone.auth.TokenHelper;
+import com.sivalabs.devzone.posts.domain.CreatePostCmd;
 import com.sivalabs.devzone.posts.domain.PostDTO;
 import com.sivalabs.devzone.posts.domain.PostService;
 import com.sivalabs.devzone.posts.domain.PostsImportService;
-import com.sivalabs.devzone.security.TokenHelper;
 import com.sivalabs.devzone.users.domain.User;
 import com.sivalabs.devzone.users.domain.UserService;
 import io.restassured.http.ContentType;
@@ -134,16 +134,17 @@ class PostControllerTests extends BaseIT {
     @Test
     void shouldGetPostByIdSuccessfully() {
         User user = userService.getUserByEmail(NORMAL_USER_EMAIL).orElseThrow();
-        var request = new CreatePostRequest("Sample title", "https://sivalabs.in", "Sample content", user.getId());
+        var request = new CreatePostCmd("Sample title", "https://sivalabs.in", "Sample content", user.id());
         PostDTO post = postService.createPost(request);
         given().contentType("application/json")
-                .get("/api/posts/{id}", post.getId())
+                .get("/api/posts/{id}", post.id())
                 .then()
                 .statusCode(200)
-                .body("id", equalTo(post.getId().intValue()))
-                .body("title", equalTo(post.getTitle()))
-                .body("url", equalTo(post.getUrl()))
-                .body("createdBy.id", equalTo(user.getId().intValue()));
+                .body("id", equalTo(post.id().intValue()))
+                .body("title", equalTo(post.title()))
+                .body("url", equalTo(post.url()))
+                .body("createdBy.id", equalTo(user.id().intValue()))
+                .body("createdBy.name", equalTo(user.name()));
     }
 
     @Test
@@ -158,11 +159,11 @@ class PostControllerTests extends BaseIT {
     void shouldBeAbleToDeleteOwnPosts() {
         User user = userService.getUserByEmail(NORMAL_USER_EMAIL).orElseThrow();
         String jwtToken = tokenHelper.generateToken(NORMAL_USER_EMAIL);
-        var request = new CreatePostRequest("Sample title", "https://sivalabs.in", "Sample content", user.getId());
+        var request = new CreatePostCmd("Sample title", "https://sivalabs.in", "Sample content", user.id());
         PostDTO post = postService.createPost(request);
         given().contentType("application/json")
                 .header(properties.getJwt().getHeader(), "Bearer " + jwtToken)
-                .delete("/api/posts/{id}", post.getId())
+                .delete("/api/posts/{id}", post.id())
                 .then()
                 .statusCode(200);
     }
@@ -181,11 +182,11 @@ class PostControllerTests extends BaseIT {
     void adminShouldBeAbleToDeletePostCreatedByOtherUsers() {
         User user = userService.getUserByEmail(NORMAL_USER_EMAIL).orElseThrow();
         String jwtToken = tokenHelper.generateToken(ADMIN_EMAIL);
-        var request = new CreatePostRequest("Sample title", "https://sivalabs.in", "Sample content", user.getId());
+        var request = new CreatePostCmd("Sample title", "https://sivalabs.in", "Sample content", user.id());
         PostDTO post = postService.createPost(request);
         given().contentType("application/json")
                 .header(properties.getJwt().getHeader(), "Bearer " + jwtToken)
-                .delete("/api/posts/{id}", post.getId())
+                .delete("/api/posts/{id}", post.id())
                 .then()
                 .statusCode(200);
     }
@@ -194,11 +195,11 @@ class PostControllerTests extends BaseIT {
     void normalUserShouldNotBeAbleToDeletePostCreatedByOtherUsers() {
         User user = userService.getUserByEmail(ADMIN_EMAIL).orElseThrow();
         String jwtToken = tokenHelper.generateToken(NORMAL_USER_EMAIL);
-        var request = new CreatePostRequest("Sample title", "https://sivalabs.in", "Sample content", user.getId());
+        var request = new CreatePostCmd("Sample title", "https://sivalabs.in", "Sample content", user.id());
         PostDTO post = postService.createPost(request);
         given().contentType("application/json")
                 .header(properties.getJwt().getHeader(), "Bearer " + jwtToken)
-                .delete("/api/posts/{id}", post.getId())
+                .delete("/api/posts/{id}", post.id())
                 .then()
                 .statusCode(403);
     }

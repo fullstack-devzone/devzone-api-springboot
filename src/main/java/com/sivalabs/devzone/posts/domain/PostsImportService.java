@@ -26,21 +26,19 @@ public class PostsImportService {
         log.info("Importing posts from file: {}", fileName);
         long count = 0L;
 
-        ClassPathResource file = new ClassPathResource(fileName, this.getClass());
-        try (InputStreamReader inputStreamReader =
-                        new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8);
-                CSVReader csvReader = new CSVReader(inputStreamReader)) {
+        var file = new ClassPathResource(fileName, this.getClass());
+        try (var inputStreamReader = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8);
+                var csvReader = new CSVReader(inputStreamReader)) {
             csvReader.skip(1);
-            CSVIterator iterator = new CSVIterator(csvReader);
+            var iterator = new CSVIterator(csvReader);
 
             Long userId =
-                    userService.getUserByEmail(SYSTEM_USER_EMAIL).orElseThrow().getId();
+                    userService.getUserByEmail(SYSTEM_USER_EMAIL).orElseThrow().id();
 
             while (iterator.hasNext()) {
                 String[] nextLine = iterator.next();
-                CreatePostRequest createPostRequest =
-                        new CreatePostRequest(nextLine[1], nextLine[0], nextLine[1], userId);
-                postService.createPost(createPostRequest);
+                var createPostCmd = new CreatePostCmd(nextLine[0], nextLine[1], nextLine[1], userId);
+                postService.createPost(createPostCmd);
                 count++;
             }
         }

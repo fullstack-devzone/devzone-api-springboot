@@ -1,11 +1,9 @@
-package com.sivalabs.devzone.security;
+package com.sivalabs.devzone.auth;
 
-import lombok.EqualsAndHashCode;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 
-@EqualsAndHashCode(callSuper = true)
-public class TokenBasedAuthentication extends AbstractAuthenticationToken {
+class TokenBasedAuthentication extends AbstractAuthenticationToken {
     private final String token;
     private final UserDetails principle;
 

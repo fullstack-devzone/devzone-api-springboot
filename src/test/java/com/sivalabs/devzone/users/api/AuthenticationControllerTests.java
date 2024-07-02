@@ -21,7 +21,7 @@ class AuthenticationControllerTests extends BaseIT {
     @Test
     void shouldLoginSuccessfullyWithValidCredentials() {
         User user = createUser();
-        var authenticationRequest = new LoginRequest(user.getEmail(), user.getPassword());
+        var authenticationRequest = new LoginRequest(user.email(), user.password());
 
         given().contentType(ContentType.JSON)
                 .body(authenticationRequest)
@@ -45,12 +45,6 @@ class AuthenticationControllerTests extends BaseIT {
         String uuid = UUID.randomUUID().toString();
         CreateUserRequest request = new CreateUserRequest(uuid, uuid + "@gmail.com", uuid);
         UserDTO userDTO = userService.createUser(request);
-        User user = new User();
-        user.setId(userDTO.id());
-        user.setName(userDTO.name());
-        user.setEmail(userDTO.email());
-        user.setPassword(request.password());
-        user.setRole(userDTO.role());
-        return user;
+        return new User(userDTO.id(), userDTO.name(), userDTO.email(), request.password(), userDTO.role());
     }
 }

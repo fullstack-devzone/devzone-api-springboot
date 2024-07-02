@@ -4,7 +4,7 @@ import static com.sivalabs.devzone.users.domain.Role.ROLE_ADMIN;
 import static com.sivalabs.devzone.users.domain.Role.ROLE_MODERATOR;
 import static com.sivalabs.devzone.users.domain.Role.ROLE_USER;
 
-import com.sivalabs.devzone.security.TokenAuthenticationFilter;
+import com.sivalabs.devzone.auth.TokenAuthenticationFilter;
 import com.sivalabs.devzone.users.domain.Role;
 import java.util.List;
 import java.util.stream.Collectors;

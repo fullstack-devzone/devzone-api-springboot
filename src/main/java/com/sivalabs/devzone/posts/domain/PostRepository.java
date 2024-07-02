@@ -1,17 +1,18 @@
 package com.sivalabs.devzone.posts.domain;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
+import com.sivalabs.devzone.common.models.PagedResult;
+import java.util.Optional;
 
-@Repository
-public interface PostRepository extends JpaRepository<Post, Long> {
+public interface PostRepository {
+    PagedResult<PostDTO> getAllPosts(int page, int size);
 
-    @Query("select p from Post p where upper(p.title) like upper(:query)")
-    Page<Post> searchByTitle(@Param("query") String query, Pageable pageable);
+    PagedResult<PostDTO> searchPosts(String query, int page, int size);
 
-    Page<Post> findByTitleContainingIgnoreCase(String query, Pageable pageable);
+    Optional<PostDTO> findById(Long id);
+
+    PostDTO save(Post post);
+
+    void deleteById(Long id);
+
+    void deleteAll();
 }

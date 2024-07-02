@@ -1,25 +1,25 @@
-package com.sivalabs.devzone.users.domain;
+package com.sivalabs.devzone.auth;
 
 import com.sivalabs.devzone.common.exceptions.UnauthorisedAccessException;
-import com.sivalabs.devzone.security.SecurityUser;
+import com.sivalabs.devzone.users.domain.SecurityUser;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public class SecurityService {
-    static User loginUser() {
+    static SecurityUser loginUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || authentication.getPrincipal() == null) {
             return null;
         }
         Object principal = authentication.getPrincipal();
         if (principal instanceof SecurityUser securityUser) {
-            return securityUser.getUser();
+            return securityUser;
         }
         return null;
     }
 
-    public static User getCurrentUserOrThrow() {
-        User user = loginUser();
+    public static SecurityUser getCurrentUserOrThrow() {
+        SecurityUser user = loginUser();
         if (user == null) {
             throw new UnauthorisedAccessException("User not logged in");
         }
@@ -27,12 +27,7 @@ public class SecurityService {
     }
 
     public static Long loginUserId() {
-        User user = loginUser();
-        return user != null ? user.getId() : null;
-    }
-
-    public static boolean isCurrentUserAdmin() {
-        User user = loginUser();
-        return user != null && user.isAdmin();
+        SecurityUser user = loginUser();
+        return user != null ? user.getUserId() : null;
     }
 }

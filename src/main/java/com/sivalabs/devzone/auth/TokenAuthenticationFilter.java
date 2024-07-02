@@ -1,4 +1,4 @@
-package com.sivalabs.devzone.security;
+package com.sivalabs.devzone.auth;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

@@ -1,8 +1,8 @@
-package com.sivalabs.devzone.users.api;
+package com.sivalabs.devzone.auth.api;
 
-import com.sivalabs.devzone.users.domain.AuthUserDTO;
-import com.sivalabs.devzone.users.domain.SecurityService;
-import com.sivalabs.devzone.users.domain.User;
+import com.sivalabs.devzone.auth.SecurityService;
+import com.sivalabs.devzone.users.domain.SecurityUser;
+import com.sivalabs.devzone.users.domain.UserDTO;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 class CurrentUserController {
 
     @GetMapping("/me")
-    ResponseEntity<AuthUserDTO> me() {
+    ResponseEntity<UserDTO> me() {
         try {
-            User loginUser = SecurityService.getCurrentUserOrThrow();
-            AuthUserDTO userDTO = new AuthUserDTO(loginUser.getName(), loginUser.getEmail(), loginUser.getRole());
+            SecurityUser loginUser = SecurityService.getCurrentUserOrThrow();
+            UserDTO userDTO = new UserDTO(
+                    loginUser.getUserId(), loginUser.getName(), loginUser.getUsername(), loginUser.getRole());
             return ResponseEntity.ok(userDTO);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

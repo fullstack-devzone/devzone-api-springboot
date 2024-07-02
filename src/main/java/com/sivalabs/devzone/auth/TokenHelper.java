@@ -1,4 +1,4 @@
-package com.sivalabs.devzone.security;
+package com.sivalabs.devzone.auth;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 

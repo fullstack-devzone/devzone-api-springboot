@@ -13,19 +13,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 @Slf4j
-public class DataInitializer implements CommandLineRunner {
-    private final ApplicationProperties applicationProperties;
+class DataInitializer implements CommandLineRunner {
     private final PostService postService;
     private final PostsImportService postsImportService;
+    private final ApplicationProperties properties;
 
     @Override
     public void run(String... args) throws Exception {
-        if (applicationProperties.isImportDataEnabled()) {
-            postService.deleteAllPosts();
-            String fileName = applicationProperties.getImportFilePath();
-            postsImportService.importPosts(fileName);
-        } else {
+        if (!properties.isImportDataEnabled()) {
             log.info("Data importing is disabled");
         }
+        postService.deleteAllPosts();
+        String fileName = properties.getImportFilePath();
+        postsImportService.importPosts(fileName);
     }
 }

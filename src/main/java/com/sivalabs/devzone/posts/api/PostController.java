@@ -1,16 +1,17 @@
 package com.sivalabs.devzone.posts.api;
 
+import com.sivalabs.devzone.auth.SecurityService;
 import com.sivalabs.devzone.common.exceptions.ResourceNotFoundException;
 import com.sivalabs.devzone.common.exceptions.UnauthorisedAccessException;
 import com.sivalabs.devzone.common.models.PagedResult;
-import com.sivalabs.devzone.posts.domain.CreatePostRequest;
+import com.sivalabs.devzone.posts.domain.CreatePostCmd;
 import com.sivalabs.devzone.posts.domain.PostDTO;
 import com.sivalabs.devzone.posts.domain.PostService;
-import com.sivalabs.devzone.users.domain.SecurityService;
-import com.sivalabs.devzone.users.domain.User;
+import com.sivalabs.devzone.users.domain.SecurityUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -56,26 +57,30 @@ class PostController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create Post", security = @SecurityRequirement(name = "bearerAuth"))
-    PostDTO createPost(@Valid @RequestBody CreatePostRequest createPostRequest) {
+    PostDTO createPost(@Valid @RequestBody CreatePostRequestPayload payload) {
         Long loginUserId = SecurityService.loginUserId();
-        CreatePostRequest request = new CreatePostRequest(
-                createPostRequest.title(), createPostRequest.url(), createPostRequest.content(), loginUserId);
+        CreatePostCmd request = new CreatePostCmd(payload.url(), payload.title(), payload.content(), loginUserId);
         return postService.createPost(request);
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete Post", security = @SecurityRequirement(name = "bearerAuth"))
     ResponseEntity<Void> deletePost(@PathVariable Long id) {
-        User loginUser = SecurityService.getCurrentUserOrThrow();
+        SecurityUser loginUser = SecurityService.getCurrentUserOrThrow();
         PostDTO post = postService.getPostById(id).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         this.checkPrivilege(post, loginUser);
         postService.deletePost(id);
         return ResponseEntity.ok().build();
     }
 
-    private void checkPrivilege(PostDTO post, User loginUser) {
-        if (!(post.getCreatedBy().getId().equals(loginUser.getId()) || loginUser.isAdmin())) {
+    private void checkPrivilege(PostDTO post, SecurityUser loginUser) {
+        if (!(post.createdBy().id().equals(loginUser.getUserId()) || loginUser.isAdmin())) {
             throw new UnauthorisedAccessException("Unauthorised Access");
         }
     }
+
+    record CreatePostRequestPayload(
+            @NotBlank(message = "URL cannot be blank") String url,
+            @NotBlank(message = "URL cannot be blank") String title,
+            String content) {}
 }
