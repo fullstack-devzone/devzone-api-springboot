@@ -1,4 +1,4 @@
-package com.sivalabs.devzone.users.domain.internal;
+package com.sivalabs.devzone.users.domain.persistence.jpa;
 
 import com.sivalabs.devzone.users.domain.User;
 import com.sivalabs.devzone.users.domain.UserDTO;

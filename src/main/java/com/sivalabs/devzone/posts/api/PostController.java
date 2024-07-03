@@ -43,7 +43,7 @@ class PostController {
             return postService.searchPosts(query, page);
         } else {
             log.info("Fetching posts with page: {}", page);
-            return postService.getAllPosts(page);
+            return postService.getPosts(page);
         }
     }
 
@@ -81,6 +81,6 @@ class PostController {
 
     record CreatePostRequestPayload(
             @NotBlank(message = "URL cannot be blank") String url,
-            @NotBlank(message = "URL cannot be blank") String title,
+            @NotBlank(message = "Title cannot be blank") String title,
             String content) {}
 }

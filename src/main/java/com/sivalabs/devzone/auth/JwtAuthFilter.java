@@ -12,11 +12,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
-public class TokenAuthenticationFilter extends OncePerRequestFilter {
+public class JwtAuthFilter extends OncePerRequestFilter {
     private final TokenHelper tokenHelper;
     private final UserDetailsService userDetailsService;
 
-    public TokenAuthenticationFilter(TokenHelper tokenHelper, UserDetailsService userDetailsService) {
+    public JwtAuthFilter(TokenHelper tokenHelper, UserDetailsService userDetailsService) {
         this.tokenHelper = tokenHelper;
         this.userDetailsService = userDetailsService;
     }
@@ -32,7 +32,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             if (username != null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 if (tokenHelper.validateToken(authToken, userDetails)) {
-                    var authentication = new TokenBasedAuthentication(authToken, userDetails);
+                    var authentication = new JwtAuthToken(authToken, userDetails);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }

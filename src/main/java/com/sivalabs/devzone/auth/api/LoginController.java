@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-class AuthenticationController {
+class LoginController {
     private final AuthenticationManager authManager;
     private final TokenHelper tokenHelper;
     private final ApplicationProperties properties;

@@ -1,4 +1,4 @@
-package com.sivalabs.devzone.posts.domain.internal;
+package com.sivalabs.devzone.posts.domain.persistence.jpa;
 
 import com.sivalabs.devzone.posts.domain.PostDTO;
 import java.util.Optional;

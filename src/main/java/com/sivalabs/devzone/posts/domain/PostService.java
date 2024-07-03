@@ -17,8 +17,8 @@ public class PostService {
 
     private final PostRepository postRepository;
 
-    public PagedResult<PostDTO> getAllPosts(int page) {
-        return postRepository.getAllPosts(page, PAGE_SIZE);
+    public PagedResult<PostDTO> getPosts(int page) {
+        return postRepository.getPosts(page, PAGE_SIZE);
     }
 
     public PagedResult<PostDTO> searchPosts(String query, int page) {
@@ -26,13 +26,13 @@ public class PostService {
     }
 
     public Optional<PostDTO> getPostById(Long id) {
-        log.debug("get post by id={}", id);
+        log.debug("Get post by id={}", id);
         return postRepository.findById(id);
     }
 
     @Transactional
     public PostDTO createPost(CreatePostCmd createPostCmd) {
-        log.debug("create post with url={}", createPostCmd.url());
+        log.debug("Create post with url={}", createPostCmd.url());
         Post post = new Post(
                 null,
                 createPostCmd.url(),

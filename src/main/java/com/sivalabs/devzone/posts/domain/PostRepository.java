@@ -4,7 +4,7 @@ import com.sivalabs.devzone.common.models.PagedResult;
 import java.util.Optional;
 
 public interface PostRepository {
-    PagedResult<PostDTO> getAllPosts(int page, int size);
+    PagedResult<PostDTO> getPosts(int page, int size);
 
     PagedResult<PostDTO> searchPosts(String query, int page, int size);
 

@@ -4,7 +4,7 @@ import static com.sivalabs.devzone.users.domain.Role.ROLE_ADMIN;
 import static com.sivalabs.devzone.users.domain.Role.ROLE_MODERATOR;
 import static com.sivalabs.devzone.users.domain.Role.ROLE_USER;
 
-import com.sivalabs.devzone.auth.TokenAuthenticationFilter;
+import com.sivalabs.devzone.auth.JwtAuthFilter;
 import com.sivalabs.devzone.users.domain.Role;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,7 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 class WebSecurityConfig {
-    private final TokenAuthenticationFilter tokenAuthFilter;
+    private final JwtAuthFilter tokenAuthFilter;
 
     @Bean
     RoleHierarchy roleHierarchy() {
@@ -39,14 +39,12 @@ class WebSecurityConfig {
         http.csrf(CsrfConfigurer::disable);
 
         http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/actuator/**", "/error")
+                .requestMatchers("/favicon.ico", "/actuator/**", "/swagger-ui/**", "v3/api-docs/**", "/error")
                 .permitAll()
                 .requestMatchers("/api/login", "/api/users/**")
                 .permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/posts/**")
                 .permitAll()
-                .requestMatchers("/api/**")
-                .authenticated()
                 .anyRequest()
                 .authenticated());
 

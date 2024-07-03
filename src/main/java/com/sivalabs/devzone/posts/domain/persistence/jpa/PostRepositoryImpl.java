@@ -1,4 +1,4 @@
-package com.sivalabs.devzone.posts.domain.internal;
+package com.sivalabs.devzone.posts.domain.persistence.jpa;
 
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Repository;
 class PostRepositoryImpl implements PostRepository {
     private final JpaPostRepository jpaPostRepository;
 
-    public PagedResult<PostDTO> getAllPosts(int page, int size) {
+    public PagedResult<PostDTO> getPosts(int page, int size) {
         Pageable pageable = PageRequest.of(page < 1 ? 0 : page - 1, size, DESC, "createdAt");
         Page<PostDTO> pageOfPosts = jpaPostRepository.findAllBy(pageable);
         return new PagedResult<>(

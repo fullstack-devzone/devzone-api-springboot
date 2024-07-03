@@ -1,4 +1,4 @@
-package com.sivalabs.devzone.users.domain.internal;
+package com.sivalabs.devzone.users.domain.persistence.jpa;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
